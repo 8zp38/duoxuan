@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f0f2f5">
+<title>多选题刷题 · 银行试题 443 题</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#f0f2f5;color:#1f2329;font-size:16px;-webkit-text-size-adjust:100%}
+#app{max-width:680px;margin:0 auto;min-height:100vh;padding-bottom:calc(74px + env(safe-area-inset-bottom))}
+.page{display:none}
+.page.active{display:block}
+.pad{padding:16px 16px 6px}
+.backlink{display:inline-block;color:#3b82f6;font-size:14px;cursor:pointer;padding:2px 0}
+/* ---------- 首页 ---------- */
+.homeTop{padding:22px 16px 4px}
+.homeTop h1{margin:0;font-size:23px;font-weight:700;letter-spacing:.5px}
+.homeTop p{margin:6px 0 0;font-size:13px;color:#8f959e}
+.hero{margin:16px 16px 4px;background:linear-gradient(135deg,#3b82f6,#60a5fa);color:#fff;border-radius:16px;padding:18px}
+.hero h2{margin:0 0 6px;font-size:17px;font-weight:600}
+.hero p{margin:0;font-size:12.5px;opacity:.95;line-height:1.6}
+.hero .bar{height:6px;background:rgba(255,255,255,.3);border-radius:3px;overflow:hidden;margin-top:12px}
+.hero .bar i{display:block;height:100%;background:#fff;width:0;border-radius:3px;transition:width .3s}
+.hero .nums{display:flex;margin-top:9px;font-size:12px;opacity:.95}
+.hero .nums span{margin-right:18px}
+.menu{padding:12px 16px 4px}
+.card{background:#fff;border-radius:14px;padding:15px 14px;margin-bottom:10px;display:flex;align-items:center;cursor:pointer;box-shadow:0 1px 6px rgba(15,35,80,.04)}
+.card:active{background:#f7f8fa}
+.card .ico{width:40px;height:40px;border-radius:11px;background:#eef4ff;display:flex;align-items:center;justify-content:center;font-size:19px;margin-right:12px;flex:0 0 40px}
+.card .tx{flex:1;min-width:0}
+.card h3{margin:0 0 3px;font-size:15.5px;font-weight:600}
+.card p{margin:0;font-size:12.5px;color:#8f959e}
+.card .arrow{color:#c9cdd4;font-size:18px;margin-left:4px}
+.muted{font-size:12.5px;color:#a8aeb8;line-height:1.75;padding:4px 2px 0}
+/* ---------- 答题页 ---------- */
+.qwrap{padding:14px 16px 10px}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.qtopRight{display:flex;align-items:center}
+.linkbtn{color:#3b82f6;font-size:13.5px;margin-right:12px;cursor:pointer}
+.qpos{font-size:13px;color:#8f959e;margin-bottom:12px}
+.qcard{background:#fff;border-radius:16px;padding:18px 16px 16px;box-shadow:0 2px 10px rgba(15,35,80,.05)}
+.qtag{font-size:12px;color:#a0a6b0;margin-bottom:10px}
+.stem{font-size:17px;line-height:1.75;font-weight:500;color:#1f2329;margin-bottom:16px;word-break:break-word}
+.opt{display:flex;align-items:flex-start;border:1.5px solid #e6e8eb;border-radius:10px;padding:14px 14px;margin-bottom:10px;cursor:pointer;background:#fff;transition:.15s}
+.opt:active{background:#f7f8fa}
+.opt .mark{flex:0 0 24px;width:24px;height:24px;border-radius:7px;border:1.5px solid #c9cdd4;color:#8f959e;font-size:13.5px;font-weight:700;text-align:center;line-height:21px;margin-right:10px}
+.opt .tx{flex:1;font-size:15.5px;line-height:1.6;color:#1f2329;word-break:break-word}
+.opt.sel{border-color:#3b82f6;background:#f2f7ff}
+.opt.sel .mark{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.opt.right{border-color:#22c55e;background:#f0fdf4}
+.opt.right .mark{background:#22c55e;border-color:#22c55e;color:#fff}
+.opt.wrong{border-color:#ef4444;background:#fef2f2}
+.opt.wrong .mark{background:#ef4444;border-color:#ef4444;color:#fff}
+.opt.missed{border-color:#22c55e;border-style:dashed;background:#f0fdf4}
+.opt.missed .mark{background:#22c55e;border-color:#22c55e;color:#fff}
+.opt.dis{cursor:default}
+.result{border-radius:10px;padding:12px 14px;margin-top:12px;font-size:14px;line-height:1.7}
+.result.ok{background:#f0fdf4;color:#15803d}
+.result.no{background:#fef2f2;color:#b91c1c}
+.result .big{display:block;font-size:15.5px;font-weight:700;margin-bottom:2px}
+.result .ans{font-weight:700}
+.acts{display:flex;margin-top:16px}
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:10px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;background:#3b82f6;color:#fff}
+.btn:active{opacity:.85}
+.btn.line{background:#fff;color:#4e5969;border:1px solid #e6e8eb;font-weight:500}
+.btn.gray{background:#f2f3f5;color:#1f2329;font-weight:500}
+.btn.danger{background:#fff1f0;color:#cf1322}
+.acts .btn{flex:1}
+.acts .btn:first-child{margin-right:10px}
+.favline{text-align:center;padding:16px 0 6px;font-size:14px;color:#8f959e;cursor:pointer}
+/* ---------- 底部标签栏 ---------- */
+.tabs{position:fixed;bottom:0;left:0;right:0;max-width:680px;margin:0 auto;background:#fff;border-top:1px solid #eceef1;display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:30}
+.tabs .tab{flex:1;text-align:center;padding:8px 0 6px;font-size:11px;color:#8f959e;cursor:pointer}
+.tabs .tab.on{color:#3b82f6}
+.tabs .tab span{display:block;font-size:19px;line-height:1.3}
+/* ---------- 通用列表 / 统计 ---------- */
+.item{background:#fff;border-radius:12px;padding:13px 14px;margin-bottom:9px;cursor:pointer;box-shadow:0 1px 6px rgba(15,35,80,.04)}
+.item .ln1{display:flex;justify-content:space-between;font-size:12px;color:#8f959e;margin-bottom:5px}
+.item .tx{font-size:14px;line-height:1.55;color:#1f2329;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.item .ln2{margin-top:7px;font-size:12px;color:#22c55e}
+.empty{text-align:center;color:#a8aeb8;padding:70px 20px;font-size:15px;line-height:1.8}
+.stat{display:flex;margin-bottom:10px}
+.stat .cell{flex:1;background:#fff;border-radius:12px;padding:14px 6px;text-align:center;margin-right:8px;box-shadow:0 1px 6px rgba(15,35,80,.04)}
+.stat .cell:last-child{margin-right:0}
+.stat b{display:block;font-size:22px;color:#3b82f6;font-weight:700;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:#8f959e}
+.sect{font-size:13px;color:#8f959e;margin:18px 4px 8px}
+.log{background:#fff;border-radius:12px;padding:4px 14px;font-size:13px;color:#4e5969;box-shadow:0 1px 6px rgba(15,35,80,.04)}
+.log .row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f2f3f5}
+.log .row:last-child{border-bottom:none}
+.log .row b{color:#3b82f6}
+.inp{width:100%;padding:12px;border:1px solid #e6e8eb;border-radius:10px;font-size:16px;font-family:inherit;background:#fff}
+.fld{font-size:13.5px;color:#4e5969;margin:16px 4px 7px}
+/* ---------- 模考结果 ---------- */
+.score{background:#fff;border-radius:16px;padding:24px 16px;text-align:center;margin-bottom:12px;box-shadow:0 2px 10px rgba(15,35,80,.05)}
+.score .num{font-size:46px;font-weight:800;color:#3b82f6;line-height:1.1;font-variant-numeric:tabular-nums}
+.score .num small{font-size:16px;font-weight:600}
+.score .lab{font-size:13px;color:#8f959e;margin-top:8px}
+.score .meta{display:flex;margin-top:18px;border-top:1px solid #f2f3f5;padding-top:14px;font-size:13px;color:#4e5969}
+.score .meta div{flex:1}
+.score .meta b{display:block;font-size:18px;color:#1f2329;font-variant-numeric:tabular-nums}
+.det{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:9px;cursor:pointer;box-shadow:0 1px 6px rgba(15,35,80,.04)}
+.det .top{display:flex;align-items:flex-start}
+.det .tag{flex:0 0 auto;font-size:12px;font-weight:700;border-radius:6px;padding:2px 7px;margin-right:8px;color:#fff}
+.det .tag.ok{background:#22c55e}
+.det .tag.no{background:#ef4444}
+.det .tx{flex:1;font-size:14px;line-height:1.55;word-break:break-word}
+.det .ansline{margin-top:7px;font-size:12.5px;color:#8f959e}
+.det .ansline em{font-style:normal;color:#3b82f6;font-weight:600}
+.det .ansline i{font-style:normal;color:#ef4444;font-weight:600}
+.det .body{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed #e5e6eb;font-size:14px;line-height:1.7}
+.det.open .body{display:block}
+.det .body .o{margin:5px 0;color:#4e5969}
+.det .body .o b{color:#3b82f6}
+/* ---------- 弹层 / 提示 ---------- */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;display:none}
+.mask.on{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:680px;margin:0 auto;background:#fff;border-radius:16px 16px 0 0;z-index:41;padding:16px 14px calc(16px + env(safe-area-inset-bottom));transform:translateY(102%);transition:transform .25s;max-height:80vh;overflow:auto}
+.sheet.on{transform:translateY(0)}
+.sheet h3{margin:0 0 12px;font-size:16px;display:flex;justify-content:space-between;align-items:center}
+.grid{display:flex;flex-wrap:wrap;margin-right:-8px}
+.grid .no{width:38px;height:38px;border-radius:9px;background:#f2f3f5;color:#4e5969;display:flex;align-items:center;justify-content:center;font-size:13px;margin:0 8px 8px 0;cursor:pointer;font-variant-numeric:tabular-nums}
+.grid .no.done{background:#e8f1ff;color:#3b82f6;font-weight:600}
+.grid .no.cur{outline:2px solid #3b82f6;outline-offset:1px}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;font-size:14px;padding:9px 16px;border-radius:20px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none;max-width:80%;text-align:center}
+.toast.on{opacity:1}
+.timer{font-variant-numeric:tabular-nums;font-weight:600;color:#8f959e;font-size:13.5px}
+.timer.warn{color:#ef4444}
+.warn{background:#fff7e6;color:#ad6800;font-size:13px;line-height:1.6;padding:10px 16px;border-bottom:1px solid #ffe7ba;display:none}
+.hide{display:none !important}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="warn" id="storeWarn">⚠️ 当前打开方式无法保存进度（本地文件 / 无痕模式）。建议用网址打开后再刷题，否则退出后错题和进度会丢失。</div>
+
+  <!-- ============ 首页 ============ -->
+  <section class="page active" id="p-home">
+    <div class="homeTop">
+      <h1>多选题刷题</h1>
+      <p id="homeSub">共 0 题</p>
+    </div>
+    <div class="hero">
+      <h2>银行试题 · 多选题</h2>
+      <p>共 <b id="heroTotal">0</b> 题　每题 4 个选项　选全且不选错才得分</p>
+      <div class="bar"><i id="heroBar"></i></div>
+      <div class="nums"><span>已练习 <b id="heroSeen">0</b> 题</span><span>正确率 <b id="heroRate">0%</b></span></div>
+    </div>
+    <div class="menu">
+      <div class="card" onclick="startDrill('seq')">
+        <div class="ico">📖</div><div class="tx"><h3>顺序刷题</h3><p id="tipSeq">按题号练习，自动记住位置</p></div><div class="arrow">›</div>
+      </div>
+      <div class="card" onclick="startDrill('rand')">
+        <div class="ico">🔀</div><div class="tx"><h3>随机刷题</h3><p>打乱顺序，随机练习</p></div><div class="arrow">›</div>
+      </div>
+      <div class="card" onclick="startDrill('wrong')">
+        <div class="ico">❌</div><div class="tx"><h3>错题重刷</h3><p id="tipWrong">做错的题集中复习</p></div><div class="arrow">›</div>
+      </div>
+      <div class="card" onclick="startDrill('fav')">
+        <div class="ico">⭐</div><div class="tx"><h3>收藏重刷</h3><p id="tipFav">收藏的题目集中练习</p></div><div class="arrow">›</div>
+      </div>
+      <div class="card" onclick="show('p-exam')">
+        <div class="ico">⏱</div><div class="tx"><h3>模拟考试</h3><p>抽题 + 限时，交卷后评分</p></div><div class="arrow">›</div>
+      </div>
+      <div class="card" onclick="show('p-stat')">
+        <div class="ico">📊</div><div class="tx"><h3>学习统计</h3><p>进度、正确率、模考记录</p></div><div class="arrow">›</div>
+      </div>
+      <p class="muted">数据保存在本机浏览器里（不同设备各自独立）。换设备或清缓存前，记得到「学习统计」导出备份。</p>
+    </div>
+  </section>
+
+  <!-- ============ 答题页 ============ -->
+  <section class="page" id="p-quiz">
+    <div class="qwrap">
+      <div class="qtop">
+        <span class="backlink" onclick="quitQuiz()">‹ 返回首页</span>
+        <span class="qtopRight">
+          <span class="linkbtn hide" id="sheetLink" onclick="openSheet()">答题卡</span>
+          <span class="timer" id="quizTimer"></span>
+        </span>
+      </div>
+      <div class="qpos" id="pos">第 1 / 443 题</div>
+      <div class="qcard">
+        <div class="qtag" id="typeLab">多选 · 银行试题题库</div>
+        <div class="stem" id="stem"></div>
+        <div id="opts"></div>
+        <div id="res"></div>
+      </div>
+      <div class="acts">
+        <button class="btn line" onclick="prevQ()">上一题</button>
+        <button class="btn" id="mainBtn" onclick="mainAction()">提交答案</button>
+      </div>
+      <div class="favline" id="favBtn" onclick="toggleFav()">☆ 收藏本题</div>
+    </div>
+  </section>
+
+  <!-- ============ 模考设置 ============ -->
+  <section class="page" id="p-exam">
+    <div class="pad">
+      <div style="margin-bottom:14px"><span class="backlink" onclick="show('p-home')">‹ 返回首页</span></div>
+      <h2 style="font-size:20px;margin:0 0 6px">模拟考试</h2>
+      <p class="muted" style="padding:0 0 6px">交卷后按「选全且不选错」判分，未作答按错误计。</p>
+      <div class="fld">抽题数量（1 - <span id="maxNum">443</span>）</div>
+      <input class="inp" id="examNum" type="number" value="50" min="1" inputmode="numeric">
+      <div class="fld">考试时长（分钟）</div>
+      <input class="inp" id="examMin" type="number" value="40" min="1" inputmode="numeric">
+      <button class="btn" style="margin-top:20px" onclick="startExam()">开始考试</button>
+    </div>
+  </section>
+
+  <!-- ============ 模考结果 ============ -->
+  <section class="page" id="p-result">
+    <div class="pad" id="resultWrap"></div>
+  </section>
+
+  <!-- ============ 错题本 ============ -->
+  <section class="page" id="p-wrong">
+    <div class="pad">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">
+        <h2 style="font-size:20px;margin:0">错题本</h2><span class="muted" id="wrongNum" style="padding:0"></span>
+      </div>
+      <div id="wrongList"></div>
+    </div>
+  </section>
+
+  <!-- ============ 收藏 ============ -->
+  <section class="page" id="p-fav">
+    <div class="pad">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">
+        <h2 style="font-size:20px;margin:0">收藏</h2><span class="muted" id="favNum" style="padding:0"></span>
+      </div>
+      <div id="favList"></div>
+    </div>
+  </section>
+
+  <!-- ============ 统计 ============ -->
+  <section class="page" id="p-stat">
+    <div class="pad">
+      <div style="margin-bottom:14px"><span class="backlink" onclick="show('p-home')">‹ 返回首页</span></div>
+      <h2 style="font-size:20px;margin:0 0 14px">学习统计</h2>
+      <div class="stat">
+        <div class="cell"><b id="sSeen">0</b><span>已练习</span></div>
+        <div class="cell"><b id="sTotal">0</b><span>累计答题</span></div>
+        <div class="cell"><b id="sRate">0%</b><span>正确率</span></div>
+      </div>
+      <div class="stat">
+        <div class="cell"><b id="sWrong">0</b><span>错题</span></div>
+        <div class="cell"><b id="sFav">0</b><span>收藏</span></div>
+        <div class="cell"><b id="sExam">0</b><span>模考次数</span></div>
+      </div>
+      <p class="sect">模考记录</p>
+      <div class="log" id="examLog"></div>
+      <p class="sect">数据管理</p>
+      <button class="btn gray" onclick="exportData()">导出备份文件</button>
+      <button class="btn gray" style="margin-top:9px" onclick="document.getElementById('impFile').click()">导入备份文件</button>
+      <input type="file" id="impFile" accept=".json,application/json" style="display:none" onchange="importData(this)">
+      <button class="btn danger" style="margin-top:9px" onclick="resetAll()">清空所有记录</button>
+      <p class="muted">导出后会下载一个 .json 文件，建议存到网盘或发到自己微信收藏；换设备时用「导入备份文件」恢复。</p>
+    </div>
+  </section>
+
+  <!-- 底部标签栏 -->
+  <nav class="tabs">
+    <div class="tab on" data-tab="p-home" onclick="tabGo('p-home')"><span>🏠</span>首页</div>
+    <div class="tab" data-tab="p-wrong" onclick="tabGo('p-wrong')"><span>✖️</span>错题</div>
+    <div class="tab" data-tab="p-fav" onclick="tabGo('p-fav')"><span>⭐</span>收藏</div>
+    <div class="tab" data-tab="p-stat" onclick="tabGo('p-stat')"><span>📈</span>统计</div>
+  </nav>
+
+  <!-- 答题卡 -->
+  <div class="mask" id="mask" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <h3><span>答题卡</span><span style="font-size:13px;color:#8f959e" id="sheetTip"></span></h3>
+    <div class="grid" id="sheetGrid"></div>
+    <button class="btn" style="margin-top:10px" onclick="submitExam(false)">交卷</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+var QUESTIONS = [{"id":1,"q":"对于代理上海黄金交易所个人贵金属交易业务，客户可以解约贵金属签约的条件是____、____、____。","options":["客户贵金属交易账户状态正常","客户必须清空所有持仓和库存（包括当月库存积数）","客户未和上海黄金交易所结清全部费用和欠款，且当天无委托、出入金和成交记录","客户已与农行和上海黄金交易所结清全部费用和欠款，且当天无委托、出入金和成交记录"],"answer":[0,1,3]},{"id":2,"q":"下列关于代理上海黄金交易所个人贵金属交易说法正确的是____。","options":["解约的贵金属交易账户在同一个交易日内不可重新签约","客户签约贵金属当日（同一个交易日）不可发起解约交易","贵金属签约类型分为新增、重复开立两类","若客户从未在我行及他行开设贵金属业务，则在新开户时属于“新增”，若客户曾经在他行签约，拥有贵金属交易编码，则属"],"answer":[0,1,2,3]},{"id":3,"q":"代理银团贷款进行本息分配时，可分别对进行分配。","options":["本金","正常息","罚息","复利"],"answer":[0,1,2,3]},{"id":4,"q":"单位结算卡开卡，客服经理应审核单位经办人是否为法定代表人（单位负责人）本人，经办人非单位法定代表人（单位负责人）时，需将经办人____、____与《单位银行结算账户开户及产品授权委托书》进行核对，并对经办人进行联网核查验证。","options":["有效身份证件","办理业务的种类","单位结算卡","法定代表人照片"],"answer":[0,1]},{"id":5,"q":"单位结算卡持卡人信息变更，客户需提供____。","options":["《中国农业银行股份有限公司单位结算卡业务申请表》，操作类型为“持卡人变更”时，申请表还需加盖预留印鉴","“持卡人变更”时，需要提供新、旧持卡人有效身份证件原件","经办人有效身份证件原件","“持卡人变更”时，经办人非单位法定代表人（单位负责人）办理的，需提供加盖公章、法定代表人（单位负责人）签字或签章的《单位银行结算账户开户及开通产品授权委"],"answer":[0,1,2,3]},{"id":6,"q":"单位结算卡开卡，客户需提供如下资料____。","options":["参照《人民币银行结算账户管理办法》开户要求，提供有关单位身份证明文件原件","单位法定代表人（单位负责人）和指定持卡人有效身份证件原件","加盖单位公章、预留印鉴和法定代表人（单位负责人）签字或签章的《中国农业银行股份有限公司单位结算卡业务申请表》","非单位法定代表人（单位负责人）办理的，需提供加盖公章、法定代表人（单位负责人）签字或签章的《单位银行结算账户开户及产品授权委托书》以及被授"],"answer":[0,1,2,3]},{"id":7,"q":"单位结算卡开卡对象为我行辖属机构开立的单位。","options":["基本存款账户","一般存款账户","专用存款账户","临时存款账户"],"answer":[0,1,2,3]},{"id":8,"q":"关于单位结算卡，下列说法正确的是____。","options":["单位结算卡可以绑定多级账簿进行开卡","开卡交易必须在关联账户的开户行办理","开卡时所提供的有关单位身份证明文件原件为关联账户开户时所提供的单位身份证明文件原件中的一种即可","客户同时开立多张单位结算卡时，如持卡人相同，可在申请表中注明张数；如持卡人不同，可附加盖单位公章和预留印鉴的清单，清单上应注明各持卡人身份证件种类及号码，并分别由各"],"answer":[0,1,2,3]},{"id":9,"q":"关于单位结算卡补/换卡，下列说法正确的是____。","options":["必须持卡人本人办理该业务","非持卡人办理的需要先进行持卡人信息变更","该业务必须在开卡行办理","换卡后新卡自动继承旧卡的关联账户关系"],"answer":[0,1,2,3]},{"id":10,"q":"某股份有限公司补办单位结算卡（密码知晓），需提供以下哪些资料____、____、____。","options":["仅加盖公章未加盖印鉴的《中国农业银行股份有限公司单位结算卡业务申请表》","持卡人有效身份证件原件","如果持卡人非企业法定代表人，还需提供加盖公章、法定代表人（单位负责人）签字或签章的《单位银行结算账户开户及开通产品授权委托书》，且被授权人","单位结算卡旧卡（如丢失需先办理书面挂失）"],"answer":[1,2,3]},{"id":11,"q":"查询查复应遵循“____”的原则，做到用语文明，有根有据，言简意赅，不得相互推诿。","options":["有疑必查","有查必复","复必详尽","切实处理"],"answer":[0,1,2,3]},{"id":12,"q":"第二代支付系统营业机构清单包括____。","options":["业务发起清单","接收清单","自动入账清单","不成功和异常清"],"answer":[0,1,2,3]},{"id":13,"q":"BoEing电子凭证管理模块实现了____等功能。","options":["电子凭证查询","打印","编辑","补录"],"answer":[0,1,2,3]},{"id":14,"q":"客户使用支付密码后，在签发支付凭证时，支付凭证上____、____，营业机构不予受理。","options":["只有签章无支付密码的","只有支付密码无签章的","既有签章也有支付密码的","日期未超出付款期限"],"answer":[0,1]},{"id":15,"q":"企业出纳人员赵六持含支付密码的支票前往我行柜面领取现金，以下做法错误的是____、____。","options":["柜面受理人员仅校验支付密码","柜面受理人员审核开票日期在2周以前仍为其办理","柜面受理人员使用票据鉴别仪识别票据真伪","柜面受理人员为客户填写大写金额"],"answer":[0,1,3]},{"id":16,"q":"对公非活期存款部提/销户业务中，资金去向非我行单位结算账户的，应提供哪些资料____。","options":["加盖公章的法定代表人（负责人）身份证件复","经办人身份证件原件及加盖公章的复印件","法定代表人（负责人）授权委托书","加盖预留印鉴的存款证实书原件"],"answer":[0,1,2,3]},{"id":17,"q":"____支持在BoEing系统中进行对账签约处理，定期存款和通知存款开立为结算账户子账户以及贷款账户不支持单独签约建立账单。","options":["结算账户","单独开立的定期存款","通知存款账户","合同类保证金账户"],"answer":[0,1,2,3]},{"id":18,"q":"“企业”指境内依法设立的____、____、____。","options":["企业法人","非法人企业","个体工商户","政府机关单位"],"answer":[0,1,2]},{"id":19,"q":"本地开户场景，企业客户申请开立基本存款账户时，客户经理通过____、____等方式向企业法定代表人核实开户意愿。","options":["面对面","远程视频","微信录音","微信视频"],"answer":[0,1]},{"id":20,"q":"不具有社会团体法人资格的工会组织开立专用存款账户时，账户名称为单位名称加“____”或“____”字样。","options":["工会","机关","工会委员会","机关委员会"],"answer":[0,2]},{"id":21,"q":"存款人对下列资金的管理与使用，____可以申请开立专用存款账户。","options":["金融机构存放同业资金","政策性房地产开发资金","收入汇缴资金和业务支出资金","党、团、工会设在单位的组织机构经费"],"answer":[0,1,2,3]},{"id":22,"q":"核准类账户销户人民银行审批后，如____、且____，可直接办理销户，可不要要求客户到银行柜台办理。","options":["账户余额为零","无待作废的重要空白凭证","无影响账户销户的合约或产品","账户余额不为零"],"answer":[0,1]},{"id":23,"q":"单位银行结算账户按用途分为____。","options":["基本存款账户","一般存款账户","专用存款账户","临时存款账户"],"answer":[0,1,2,3]},{"id":24,"q":"对公非活期存款销户时，支取的存款可以____、____。","options":["转入基本账户","转入其原转存账户","用于结算","支取现金"],"answer":[0,1]},{"id":25,"q":"对公客户身份证明文件主要包括____。","options":["企业法人：企业法人营业执照","非法人企业：企业营业执照","工会组织：工会法人资格证书","个体工商户：个体工商户营业执照"],"answer":[0,1,2,3]},{"id":26,"q":"对公账户冻结方式包括____、____、____。","options":["金额冻结","半封","全封","电话冻结"],"answer":[0,1,2]},{"id":27,"q":"对账签约是为规范银行和客户对账行为，在____、____、____的原则下，由双方明确各自权利和义务，约定对账方式、对账周期等对账要素的签订合同过程。","options":["自愿","平等","各自立场","互利"],"answer":[0,1,3]},{"id":28,"q":"个体工商户凭营业执照以____或____开立的银行结算账户纳入单位银行结算账户管理","options":["字号","经营者姓名","房产证号","租赁合同号"],"answer":[0,1]},{"id":29,"q":"核准类账户销户时需将销户资料____、____、____，报送中国人民银行当地分支行，待人民银行核准后办理销户。","options":["撤销单位银行结算账户申请书","开户许可证正副本","法人身份证复印件","法人身份证原件"],"answer":[0,1,2]},{"id":30,"q":"某对公客户向网点反映其登陆企业网银时查询不到公司对账单，无法完成本季度对账，经确认为我行系统原因后，客服经理按制度应进行以下操作____、____、____","options":["客服经理在自制凭证上注明账户名称、账号、账单号、调整原因","将对账方式先改为“其他（纸质）”再改回“网银”","将对账方式先改为“不对账”再改回“网银”","自制业务凭证经内勤行长审批"],"answer":[0,1,3]},{"id":31,"q":"某咨询公司来银行办理变更法人业务，以下材料可作为业务办理材料的是____","options":["公司身份证明文件原件及复印件","变更信息有关证明文件原件及复印件","法定代表人（负责人）身份证件原件及复印件","非法人办理时需提供授权办理业务人员身份证件原件及复印件、授权委托书"],"answer":[0,1,2,3]},{"id":32,"q":"对公通知支取金额不得低于最低取款额（等值人民币____万元），且支取后留存金额不得低于最低留存金额（等值人民币____万元）。","options":["10万","40万","60万","50万"],"answer":[0,3]},{"id":33,"q":"有扣划权限的有权机关有____、____、____。","options":["人民法院","审计机关","税务","海关"],"answer":[0,2,3]},{"id":34,"q":"账户平移完成后，____将开户资料及时移交移入行，____应核对账户平移结果。","options":["移出行","开户行","移入行","上级行"],"answer":[0,2]},{"id":35,"q":"治理电信网络诈骗相关业务包括____等。","options":["核实涉案账户开户人","核实涉案账户关联账户","开户6个月未动账账户","异常交易账户"],"answer":[0,1,2,3]},{"id":36,"q":"一般存款账户用于办理____、____、____和其他结算的资金收付。","options":["存款人借款转存","借款归还","现金支取","其他结算的资金收付"],"answer":[0,1,3]},{"id":37,"q":"客户已经签订《银企对账服务协议》，又新开立____等存款账户的，银行可以直接将新开立账户增加进客户已有账单。","options":["结算","通知","保证金","定期"],"answer":[0,1,2,3]},{"id":38,"q":"签订柜面代发工资协议时，委托单位应提供。","options":["加载统一社会信用代码的营业执照","开户许可证（当地人民银行已取消开户许可证的无需提供）","委托单位法定代表人（负责人）身份证件原件","委托单位法定代表人（负责人）无法到场时，还须提供被授权办理业务人员身份证件原件、代发工资业务授权委"],"answer":[0,1,2,3]},{"id":39,"q":"根据《中国农业银行代发工资业务管理规定》，____、____和____应建档永久保存","options":["代发工资申请单","代发工资处理结果确认单","代发工资业务申请书","转账业务凭证"],"answer":[0,1,2]},{"id":40,"q":"营业机构协助有权机关查询的资料，有权机关根据需要可以____、____、____，但不得带走原件。","options":["抄录","复制","照相","借走"],"answer":[0,1,2]},{"id":41,"q":"BoEing系统产品结转支持：。","options":["活期产品之间互相结转","整整产品之间互相结转","通知产品之间互相结转","非标准期限产品之间互相结转"],"answer":[0,1,2,3]},{"id":42,"q":"关于公司客户大额存单销户或部提业务，以下说法正确的是：____。","options":["须提供加盖预留印鉴的存款证实书原件（若有开立）","资金去向为我行单位结算账户的，提供经办人的有效身份证件","须填写《对公大额存单销户（部提）申请书》","CCS等级为高风险的，须提供《中国农业银行加强型尽职调查表》"],"answer":[0,2,3]},{"id":43,"q":"未在我行开立人民币单位结算账户的法人客户申请办理大额存单业务，以下说法正确的是____。","options":["须提供《对公大额存单开户（变更）申请书》","须提供《中国农业银行对公大额存单产品协议书》","须提供法定代表人身份证件原件","须提供经办人身份证件原件"],"answer":[0,1,2,3]},{"id":44,"q":"关于对公人民币结算套餐业务差错与异常处理，以下说法正确的是：____、____、____。","options":["建立结算套餐有误的，可通过相应交易进行修改","与客户签约有误的，应及时联系客户进行修改或者重新签约","与客户签约有误的，可自行修改","无法通过相关交易修改的，应提交事件单由总行数据中心进行修"],"answer":[0,1,3]},{"id":45,"q":"一级分行可在____、____部署结算套餐签约功能，便于客户自主选择、购买符合客户需求的结算套餐。","options":["企业网银特色业务","企业掌银特色专区","电话银行","自助设备"],"answer":[0,1]},{"id":46,"q":"对公外汇账户根据开户对象的不同，分为____、____、____。","options":["经常项目外汇账户","境内机构外汇账户","境外机构境内外汇账户","驻华机构外汇账户"],"answer":[1,2,3]},{"id":47,"q":"对公外汇账户根据账户性质不同，分为____、____、____。","options":["经常项目外汇账户","资本项目外汇账户","其他类外汇账户","驻华机构外汇账户"],"answer":[0,1,2]},{"id":48,"q":"对公外汇账户管理的基本原则是____。","options":["客户审慎准入","业务归口管理","账户扎口管理","政策严格落实"],"answer":[0,1,2,3]},{"id":49,"q":"机构税收居民身份声明文件，以下客户无需提供。","options":["境内外政府机构","国际组织","境内事业单位","武警部队"],"answer":[0,1,2,3]},{"id":50,"q":"贷款归还分为____、____、____。","options":["正常还款","提前还款","超期还款","直接还款"],"answer":[0,1,2]},{"id":51,"q":"对公贷款冲账方式包括：冲账和补账；账单上的利息种类包括：____、____、____。","options":["正常息","罚息","复利","应收本金"],"answer":[0,1,2]},{"id":52,"q":"对公贷款还款时，选择“根据选择项还款”时，可分别对____进行归还。","options":["本金","正常息","罚息","复利"],"answer":[0,1,2,3]},{"id":53,"q":"委托贷款建立委托主合约时需约定资金入账方式，包括：____、____。","options":["无需入账","直接入账方式","冻结后入账","锁定入账"],"answer":[1,2]},{"id":54,"q":"抵质押物入库保管，是指根据信贷部门通知及制度要求办理有价单证或权属证书的____等手续。","options":["核对","交接","登记","入库"],"answer":[0,1,2,3]},{"id":55,"q":"对账单分为纸质对账单和电子对账单。其中，电子对账单传递方式分为____几种传递方式。","options":["企业网银（含企业掌银）","银企通平台","手机安全认证码","其他电子"],"answer":[0,1,2,3]},{"id":56,"q":"对账工作遵循以下原则：____。","options":["重要性原则","及时性原则","连续性原则","全面性原则"],"answer":[0,1,2,3]},{"id":57,"q":"对账人员应具备以下基本条件：____。","options":["政治思想端正，责任心强，有良好的职业道德品行","熟练掌握对账制度和对账流程","具有一定柜面工作经验、较强的检查分析、文字综合能力以及与客户交流能力，能熟练操作电子验印系统、对账管理系统等应用","员工行为排查无异常情况，无违规违纪记录"],"answer":[0,1,2,3]},{"id":58,"q":"同业账户对账范围包括____等账户。","options":["结算性同业存放","合作性同业存放","结算性存放同业","合作性存放同业"],"answer":[0,1,2,3]},{"id":59,"q":"下列关于对账率指标管理说法正确的是：____。","options":["对账率=每期有效对账账户数/每期应对账账户数","重点账户对账率最低应达到99%","普通账户对账率最低应达到90%","定期、通知、保证金和贷款账户对账率应达到"],"answer":[0,1,2,3]},{"id":60,"q":"因____等原因，客户无法及时完成对账的；客户无法联系或不配合对账且账户已对账止付的，可不纳入当期对账率指标。","options":["注销","吊销","破产清算","账户冻结"],"answer":[0,1,2,3]},{"id":61,"q":"对账周期包括____、____、____三种，只能三选一，默认是指由对账管理系统根据账户分类规则动态确定对账周期，但至少每季度对账一次。","options":["按年","按月","按季","默认"],"answer":[1,2,3]},{"id":62,"q":"电子对账单传递方式分为____。","options":["企业网银（含企业掌银）","银企通平台","手机安全认证码","其他电子传递方式"],"answer":[0,1,2,3]},{"id":63,"q":"关于借记卡升降级，以下说法正确的有：____。","options":["不支持社会保障卡和附属卡的升降级操作","已开立I类账户的客户，II类户借记卡不能升级","I类户已开立外币子账户的，不能降级","I类户借记卡属于卡折合一户的，不能降级"],"answer":[0,1,2,3]},{"id":64,"q":"关于卡折转账业务，以下说法正确的是____：","options":["卡折转账是指借记卡、准贷记卡、贷记卡和活期存折等活期产品本外币主账户之间的互转，以及人民币主账户转对公账户、外币主账户转另一账","向存款人提供的转账方式包括实时到账、普通到账、次日到账","普通到账为2小时后到账","次日到账为24小时后到账"],"answer":[0,1,2,3]},{"id":65,"q":"关于“双利丰”个人通知存款业务，以下说法正确的是____。","options":["可以一次或分次支取","分次支取金额应不低于最小转存金额，否则按活期利率计息","“大众版”个人通知存款若单笔通知存款子账户转出金额不足人民币5万元的，转出部分按人民币活期存款利率计","“投资版”个人通知存款若单笔通知存款子账户转出金额不足人民币10万元的，转出部分按人民币活期存款利率"],"answer":[0,1,2,3]},{"id":66,"q":"下列属于法定代理关系有效证明的有____。","options":["户口簿、出生医学证明","独生子女证","司法文书（已生效判决书、裁定书或调解书等）","社区居委会（村民委员会）及法律规定的有关组织出具的有关证"],"answer":[0,1,2,3]},{"id":67,"q":"个人____不能做挂失销户，只能做书面挂失补发。","options":["定期一本通","联名定期一本通","整存零取","存本取息"],"answer":[0,1,2,3]},{"id":68,"q":"____、____、____等借记卡，在未启用、未激活前可直接挂失销卡。","options":["本人开卡","批量开卡","代理开卡","睡眠卡"],"answer":[1,2,3]},{"id":69,"q":"“20234银行卡书面挂失销户”交易，对有____、____、____等合约的借记卡，可联动解约交易。","options":["电子现金","国债","储蓄国债","第三方存管"],"answer":[0,1,2]},{"id":70,"q":"BoEing系统支持状态为____的账户进行重归户。","options":["口头挂失","书面挂失","冻结","睡眠"],"answer":[0,1,2,3]},{"id":71,"q":"修改以下个人客户信息，可代理的有____、____、____。","options":["职业","地址","证件有效期","手机号码"],"answer":[0,1,2]},{"id":72,"q":"对于制裁名单筛查产生的预警，客服经理应在经过充分分析和必要的尽职调查基础上，得出预警判断和处理结论，预警处理结论包括____、____、____。","options":["“继续流程”","“拒绝办理”","“直接通过”","“提交复审”"],"answer":[0,1,3]},{"id":73,"q":"Ⅱ类户可以办理以下____业务。","options":["存款","购买投资理财产品","限额消费和缴费","限额向非绑定账户转出资金业务"],"answer":[0,1,2,3]},{"id":74,"q":"当客户提供存单、存折时，还应严格鉴别凭证真伪。鉴别要点主要有：____。","options":["从单折纸质及印刷方面，审查单折底纹水印等防伪暗记是否清晰，单折纸张厚度、光滑度、弹","单折凭证号处有无挖补、擦涂、变色等变造痕迹","从单折内容方面，审查打印的内容是否为银行常用字体","从印章方面，审查印章内容格式是否符合本行一般特点"],"answer":[0,1,2,3]},{"id":75,"q":"储蓄种类可选择：____。","options":["整存整取存单","活期","零整教育","定活两便"],"answer":[0,1,2,3]},{"id":76,"q":"个人账户开户时，存在以下____、____、____情况时应拒绝开户。","options":["证件照片与客户相貌相符时","鉴别为伪冒证件时","居民身份证不能机读识别时","超过证件有效期时"],"answer":[1,2,3]},{"id":77,"q":"存在以下____情况的Ⅰ类户不能降级。","options":["配有对账折","存在预授权、存在延时转账等冻结金额","已开立电子现金账户","已开立外币子账户"],"answer":[0,1,2,3]},{"id":78,"q":"错账原因包括____等类型。","options":["存款金额多存、存款金额少存","取款金额多付、取款金额少付","收款账户串户","付款账户串户"],"answer":[0,1,2,3]},{"id":79,"q":"柜面口头挂失业务，当客户本人只能提供其身份证件号码、未出示证件原件时，客服经理应询问核对____和____。","options":["开户日期","挂失原因","客户账户信息","预留CIF信息"],"answer":[2,3]},{"id":80,"q":"定期一本通子账户销户，包括：____。","options":["本外币现金销户","销户转过渡","销户转借记卡","销户转活期一本"],"answer":[0,1,2,3]},{"id":81,"q":"同一客户在本行只能开立一个Ⅰ类账户，包含____、____。","options":["借记卡","活期结算存折","定期存折","贷记卡"],"answer":[0,1]},{"id":82,"q":"对于____的客户，要按照《中国农业银行储蓄业务管理办法》、《关于进一步做好特殊客户群体服务工作的通知》相关要求，视情况提供上门服务或要求提供代理关系证明、特殊情况证明材料、承诺书等","options":["无民事行为能力","限制民事行为能力","行动不便、意识不清","因出国、服刑羁押等特殊原因无法亲自办理业务"],"answer":[0,1,2,3]},{"id":83,"q":"以下属于有效证件类型的有：____。","options":["居民身份证","临时居民身份证（须提供人行规定的辅助身份证明材料）","16周岁以下公民还可凭户口簿","港澳居民往来内地通行证"],"answer":[0,1,2,3]},{"id":84,"q":"附属卡是指借记卡主卡持卡人为____或____申领的，授权其使用主卡账户资金的借记卡。","options":["本人","近亲属","朋友","同事"],"answer":[0,1]},{"id":85,"q":"个人客户关键信息是指____等信息。","options":["客户姓名","证件类型","证件号码","国籍"],"answer":[0,1,2,3]},{"id":86,"q":"个人合约解约交易用于____，在经联网核查人脸识别通过后的批量合约解约。","options":["外汇宝","个人资金归集","存金通、存金通2号","账户贵金属、金交所代理、理财产品等零余额合"],"answer":[0,1,2,3]},{"id":87,"q":"个人身份基本信息是指____、____、____等九要素信息。","options":["婚姻状况","客户姓名","性别、国籍、职业","住所地或者工作单位地址、联系"],"answer":[1,2,3]},{"id":88,"q":"个人信用信息，包括____。","options":["信用卡还款情况","贷款偿还情况","征信情况","个人在经济活动中形成的，能够反映其信用状况的其他信息"],"answer":[0,1,2,3]},{"id":89,"q":"个人重点关注客户：是指根据《中国人民银行关于加强支付结算管理防范电信网络新型违法犯罪有关事项的通知》要求，需要重点关注的____、____、____等。","options":["“涉案账户开户人”","“买卖银行账户和支付账户、冒名开户、为违法犯罪活动转移赃款提供便利的个人或相关组织者","“使用外国护照开户人”","“多人使用同一手机号码开户人”"],"answer":[0,1,3]},{"id":90,"q":"个人重点关注账户：是指根据《中国人民银行关于加强支付结算管理防范电信网络新型违法犯罪有关事项的通知》要求，需要重点关注的____等。","options":["“电信诈骗已冻结对私卡号”","“惩戒账户”","“涉案账户关联账户”","“开户6个月未动账账户”"],"answer":[0,1,2,3]},{"id":91,"q":"个人重点关注账户管理交易用于查询、新增和修改个人重点关注账户的核实状态，包括：____、____。","options":["使用外国护照开户账户","涉案账户关联账户","开户6个月未动账账户","异常交易账户"],"answer":[1,2,3]},{"id":92,"q":"根据客户需要，借记卡主卡销户可选择的销户方式有：____、____、____。","options":["现金销户","转过渡","转借记卡","转微信"],"answer":[0,1,2]},{"id":93,"q":"关于存本取息定期储蓄存款，以下说法正确的是____、____、____。","options":["一次性存入本金，分次支取利息，到期后一次支取本金的定期储蓄存款业务","取息日未到，不得提前支取利息","客户按照开户时约定的取息日，可一个月或几个月取息一次","取息日未到，可以提前支取利息"],"answer":[0,1,2]},{"id":94,"q":"关于柜面个人借记卡账户激活，以下说法正确的是：____、____、____。","options":["借记卡激活指批量开卡、代理开卡、同号换卡的借记卡激活","借记卡零余额集中销户激活指账户真实性核实不通过的借记卡中，余额为0且四年以上未动账，系统批量中止服务的借记卡的激活","止付账户激活针对借记卡、单、折等产品因账户真实性核实被系统批量中止服务账户的激活","睡眠户激活针对借记卡、单折等睡眠户产品的激活"],"answer":[0,2,3]},{"id":95,"q":"关于借记卡跨发卡行异号换卡功能，以下哪些卡种____，不可以换为622848、623052普卡。","options":["军人保障卡","社保卡","退役金卡","单位借记卡"],"answer":[0,1,2,3]},{"id":96,"q":"关于挂失业务，以下说法正确的是：____。","options":["借记卡口挂可以在全国任一网点办理","借记卡书面挂失补发、书面挂失销户、解挂可在非原挂失网点办","活期一本通密码挂失可在全国任一网点办理","挂失业务允许代理办理"],"answer":[0,1,2,3]},{"id":97,"q":"关于联名定期一本通账户，以下说法正确的是：____。","options":["不能开立个人存款证明","不支持质押贷款业务","子账户不得移出为存单","定期存单也不得移入到定期联名账户中"],"answer":[0,1,2,3]},{"id":98,"q":"关于联名定期一本通账户销户，以下哪些内容需要审查：____、____、____。","options":["所有联名客户成员的联名定期一本通存折","严格审查存折的支控方式，支控方式只能为凭密","审查客户有效身份证件，允许代理","审查客户有效身份证件，不允许代理。"],"answer":[0,1,3]},{"id":99,"q":"关于密码修改/解锁业务，以下____、____、____介质可跨一级分行交易。","options":["整存整取存单","定期一本通","开户证实书","活期一本通"],"answer":[0,1,3]},{"id":100,"q":"个人敏感信息是指一旦泄露或者非法使用，容易导致自然人的人格尊严受到侵害或者人身、财产安全受到危害的个人客户信息，包括____等信息。","options":["生物识别","宗教信仰","金融账户","不满十四周岁未成年人的个人信息"],"answer":[0,1,2,3]},{"id":101,"q":"关于轮候冻结，以下说法正确的是：____、____、____。","options":["指对于同一个存款账户或同一笔存款资金，在被其他有权机关冻结后，允许第二、第三等若干个后续有权机关排","轮候顺序按冻结时间先后排序","系统控制将“质押冻结、预授权冻结”与“有权机关冻结”处于同一级别进行轮候处理","系统控制将“质押冻结、预授权冻结”高于“有权机关冻结”进行轮候处理"],"answer":[0,1,2]},{"id":102,"q":"个人账户分类分级管理是指为借记卡设置非柜面渠道支出限额，包括____支出功能的限额。","options":["无卡支付","转账","境内、境外消费","境内、境外自助设备取现"],"answer":[0,1,2,3]},{"id":103,"q":"关于个人账户分类分级管理说法正确的是：____。","options":["客户提供本人有效身份证件","根据行内制度要求完成客户非柜面渠道交易限额分级评定","不支持电子账户、军人保障卡、军人保障卡职工卡的限额设置","可在全国范围内办理，不允许代理"],"answer":[0,1,2,3]},{"id":104,"q":"会计档案原件查询结果可以提供给执法人员____、____和____。","options":["抄录","复制","照相","带走原件"],"answer":[0,1,2]},{"id":105,"q":"教育储蓄存款到期后可凭____、____和____一次支取本息。","options":["存折","有效身份证件","学校提供的“正在接受非义务教育的学生身份证","学生证"],"answer":[0,1,2]},{"id":106,"q":"借记卡卡状态异常时的常规解决方案有：____。","options":["借记卡卡状态第一位为“2-未启用”或“9-睡眠”的，即卡状态为200000000或900000000的，可通过“20219借记卡激活”或“20222睡眠户激活”交易置为正常状态","对于借记卡卡状态为900000000且账户状态为800000000的，需使用“20220借记卡零余额集中销户激活”交易激活","借记卡卡状态第二位为“1-口头挂失”或“2-书面挂失”的，即卡状态为010000000或020000000的，可通过“20236个人解挂”交易置为正常状态","借记卡卡状态第四位为“1-卡止付”或“2-活期账户止付”的，即卡状态为000100000或000200000的，可通过“20221止付账户激活”交易置为正常"],"answer":[0,1,2,3]},{"id":107,"q":"借记卡伪冒账户销户，如果账户有余额，销户成功后，系统自动将余额转入开户行的“个人伪冒账户销户专项资金”专用账户，该专户不允许手工记账，但可以对其余额进行____操作。","options":["查询","冻结","解冻","扣划和冲正"],"answer":[0,1,2,3]},{"id":108,"q":"近亲属是指____。","options":["父母、子女","配偶、兄弟姐妹","祖父母、外祖父母","孙子女、外孙子女"],"answer":[0,1,2,3]},{"id":109,"q":"经过____和____确认身份，III类户还可以办理非绑定账户资金转入业务。","options":["银行柜面","掌上银行","自助设备加以银行工作人员现场面对面","电话银行"],"answer":[0,2]},{"id":110,"q":"境外个人开户时，护照复印件留存至少要包括：____。","options":["护照信息页","签名页","中国签证页、中国边境出入境章页","备注页"],"answer":[0,1,2,3]},{"id":111,"q":"本行个人银行结算账户分为____、____和____。","options":["I类","II类","III类","V类"],"answer":[0,1,2]},{"id":112,"q":"军人、武装警察尚未申领居民身份证的，其到柜面办理业务时，除出具军人、武装警察身份证件外，还应出具____或____。","options":["居民身份证","军人保障卡","驾驶证","所在单位开具的尚未领取居民身份证的证明材料"],"answer":[1,3]},{"id":113,"q":"开卡工本费实现系统自动试算和提示，工本费可选择____和____两种方式。","options":["“外收现金”","“微信转账”","“低柜批扣”","“扫码收费”"],"answer":[0,2]},{"id":114,"q":"在中华人民共和国境内已登记常住户口中国公民的有效证件为居民身份证（包括临时居民身份证）；不满十六周岁的，可以使用____或____。","options":["居民身份证","护照","户口簿","学生证"],"answer":[0,2]},{"id":115,"q":"与客户业务关系存续期间，如遇____风险情形，应开展加强型尽职调查。","options":["客户有关行为或者交易出现反洗钱方面异常的","客户为国家司法、执法和监察机关调查、发布的涉嫌洗钱或者恐怖融资及相关犯","先前获得的客户身份资料的真实性、有效性、完整性存在疑点的","客户所在国家（地区）被新列入FATF高风险国家（地区）"],"answer":[0,1,2,3]},{"id":116,"q":"客户李四的母亲王五因病身故，来行要求查询客户王五的存款情况，客户李四需提供____等资料。","options":["王五的死亡证明","存款查询申请书","李四的有效身份证件","李四与王五的关系证明材料"],"answer":[0,1,2,3]},{"id":117,"q":"客户身份识别时，需要进行准入尽职调查：____。","options":["为在我行无个人账户的客户开立单折、借记卡、信用卡和电子账户等。","为不在我行开立账户的客户提供办理现金汇款、票据兑付、代理无卡（折）存款等一次性金融服务，且交易金额单笔人民币1万元（含）以上。","首次为不在本行开立账户的客户办理个人外币现钞兑换、提供实物贵金属买卖服务。","监管机构或本行规定的其他须进行准入尽职调查的情形"],"answer":[0,1,2,3]},{"id":118,"q":"客户赵六前来我行柜面办理银行卡销户业务，客服经理张三对其身份证进行联网核查后结果显示：“人行核查返回结果一致，留存照片与证件照片不一致”，此时赵六可提供以下哪些辅助身份证明材料之","options":["居住证","机动车驾驶证","护照","社保卡"],"answer":[0,1,2,3]},{"id":119,"q":"两名全程佩戴口罩的公安局执法人员仅出具《调取证据通知书》，要求查询客户赵六近一个月交易流水。客服经理张三受理执法人员递交资料后，直接在系统中查询相关信息并向执法人员提供了赵六近一个月的交易流水和取款凭证影像打印件。上述案例中，客服经理张三存在____、____和____三项违规行为。","options":["未对执法人员的工作证件进行初审","超范围提供查询结果","未经内勤行长审批","在BoEing系统操作查询交易"],"answer":[0,1,2]},{"id":120,"q":"某境外人士持外国护照及借记卡来我行取现人民币5万元，柜面应留存客户护照复印件，具体包括：","options":["护照信息页、签名页","中国签证页","中国边境出入章页","备注页"],"answer":[0,1,2,3]},{"id":121,"q":"审核客户提供的身份证件的有效性，对客户身份有疑义的，可要求客户提供____等其他辅助证件进一步核实客户身份后办理","options":["居民户口簿","护照","机动车驾驶证","社会保障卡"],"answer":[0,1,2,3]},{"id":122,"q":"审核客户提供的银行卡、存折或存单等凭证时，需审核____。","options":["凭证是否为我行发行","凭证是否真实有效","无“样卡”、“样折”、“样单”、“测试专用”等字样","无打洞、剪角、毁坏、涂改或伪造的痕迹"],"answer":[0,1,2,3]},{"id":123,"q":"“聪明账”与____、____、____为互斥产品，不能同时签约。","options":["“双利丰”个人通知存款","银利多","存贷通业务","网上银行"],"answer":[0,1,2]},{"id":124,"q":"销挂失卡折凭证指用于销挂失状态下的卡折凭证，包括____等功能。","options":["有卡销已挂失折","有折销已挂失卡","挂失的借记卡附卡销卡","已挂失且无子账户的定期一本通存折销折"],"answer":[0,1,2,3]},{"id":125,"q":"协议利率审批通知书要素包括____等内容","options":["客户信息","申请上浮利率","申请金额、存期","审批部门"],"answer":[0,1,2,3]},{"id":126,"q":"以下____、____和____可在全国网点办理卡片激活。","options":["批量开卡","个人代理开卡","睡眠户","同号换卡"],"answer":[0,1,2]},{"id":127,"q":"以下哪些介质不能做挂失销户，只能做书面挂失补发：____。","options":["定期一本通","联名定期一本通","整存零取","存本取息"],"answer":[0,1,2,3]},{"id":128,"q":"以下____和____账户不能办理冻结。","options":["借记卡","借记卡附卡","准贷记卡","准贷记卡附卡"],"answer":[1,3]},{"id":129,"q":"以下____、____和____转账可使用转账撤销交易进行撤销。","options":["柜面渠道受理的普通转账","柜面渠道受理的实时转账","电子渠道受理的普通和次日转账","自助设备上受理的本行和跨行延迟转账"],"answer":[0,2,3]},{"id":130,"q":"以下有权机关中，____、____和____具有扣划权限。","options":["公安机关","人民法院","税务机关","海关"],"answer":[1,2,3]},{"id":131,"q":"因证件类型变更，且不修改姓名和身份证号码，以下哪些情况____、____和____只需提供居民身份证。","options":["将证件类型从户口簿修改为居民身份证","从临时居民身份证修改为居民身份证","将证件从外国护照修改为居民身份证","从重号居民身份证修改为居民身份证的"],"answer":[0,1,3]},{"id":132,"q":"协助有权机关冻结个人存款，冻结方式包括：____。","options":["全封","半封","按金额冻结","全账户冻结"],"answer":[0,1,2,3]},{"id":133,"q":"网点对协助查询存款通知书只作形式审查，审查要点包括：____，否则一律不得继续办理。","options":["通知书是否依法送达","签章是否清晰，签发机关是否签章","是否具有查询权限","是否为县、团级（含）以上级别机构"],"answer":[0,1,2,3]},{"id":134,"q":"在中华人民共和国境内已登记常住户口的中国公民的有效证件为居民身份证（包括临时居民身份证）；不满十六周岁的，可以使用____和____。","options":["居民身份证","出生证","户口簿","学生证"],"answer":[0,2]},{"id":135,"q":"转账撤销是指____和____转账的约定时间内，向存款人提供的撤销转账服务。","options":["普通","次日","跨月","跨年"],"answer":[0,1]},{"id":136,"q":"子账户开户，是指____、____和____的开户。","options":["借记卡子账户","定期一本通子账户","联名定期一本通子账户","存单子账户"],"answer":[0,1,2]},{"id":137,"q":"在与个人客户建立业务关系时，应当识别客户身份，开展准入尽职调查。开展准入尽职调查的情形包括____：","options":["为在本行无个人账户的客户开立单折、借记卡、信用卡和电子账户等","首次为不在本行开立账户的客户提供现金汇款等一次性金融服务，且交易金额单笔人民币1万元","首次为不在本行开立账户的客户办理个人外币现钞兑换、提供实物贵金属买卖服务","监管机构或本行规定的其他须进行准入尽职调查的情形"],"answer":[0,1,2,3]},{"id":138,"q":"涉及客户变更____的应开展客户身份重新识别。","options":["姓名","国籍","身份证件或身份证明文件的种类","身份证件或身份证明文件的号码"],"answer":[0,1,2,3]},{"id":139,"q":"拟准入个人客户，应对其开展加强型尽职调查，涉及的情形包括：____。","options":["客户CCS等级为高风险及以上的客户","客户为外籍人士","客户为特定自然人","客户特征、业务关系的目的和意图、资金来源和用途存在较高洗钱风险等监管机构或本行认为应进行加强型尽职"],"answer":[0,1,2,3]},{"id":140,"q":"申请办理批量开立个人账户提供的资料包括____：","options":["单位客户统一社会信用代码证等证明单位真实性材料的复印件、单位负责人及经办人有效身份证件原件、授权委托书（单位负责","开户申请表","开户信息资料（指《持卡人个人信息资料》或《存单开户信息资料》","被代理人有效身份证件的复印件或影印件。"],"answer":[0,1,2,3]},{"id":141,"q":"关于建立对公客户批交易属性合约的业务审核，以下说法正确的三项的是____、____、____。","options":["在受理批量开户业务时，对于无法确认单位真实性的，应由客户经理双人上门核实代理单位的真","对单位负责人、授权经办人的身份进行初次识别","客户经理应在加盖单位公章的开户申请表上签字确认","单位负责人身份证在一年内到期的，系统将不允许开户"],"answer":[0,1,2]},{"id":142,"q":"关于批量开户资料须专夹保管，包括但不限于以下内容____；","options":["单位客户统一社会信用代码证等证明的复印件","单位负责人、授权经办人的联网核查结果","金穗借记卡批量开卡申请表/定期存单批量开户申请表、开户信息","被代理人有效身份证件的复印件或影印件"],"answer":[0,1,2,3]},{"id":143,"q":"个人遗失或逾期补办《携带外汇出境许可证》的，按照“谁签发、谁补办”原则，在出境前持____等材料，向原签发银行或外汇局提出申请。","options":["有效证件","有效签证","有效签注","提钞业务回单"],"answer":[0,1,2,3]},{"id":144,"q":"同一客户外币现金存入当日累计超过1万美元的，凭____、____或____在本行办理。","options":["有效身份证件","海关签章的《中华人民共和国海关进境旅客行李物品申报单》","原存款银行外币现金提取单据","原存款银行外币现金存入单据"],"answer":[0,1,2]},{"id":145,"q":"某网点接到客户提交的冠字号码查询申请时，满足____条件方可受理。","options":["查询日应在办理存取款业务之日起三个月内（含取款当日）","客户应携带有效证件（身份证、军官证、台胞证或护照等）、假币实物或假币收缴单据、办理取款业务的证明材料（银行卡、存","查询人授权代理人进行查询的，还应携带代理人的有效证件","填写《冠字号码查询申请表》"],"answer":[0,1,2,3]},{"id":146,"q":"冠字号码记录设备包括____、____和____等可以记录冠字号码的现钞处理设备。","options":["清分机","现金类自助（智能）设备","存折打印机","点钞机"],"answer":[0,1,3]},{"id":147,"q":"各级行应按照“____”的原则开展运营业务外包。","options":["风险可控","严格审批","职责跟进","全程管理"],"answer":[0,1,2,3]},{"id":148,"q":"各级行应定期对运营外包业务进行监督检查，对外包服务商的履约能力进行持续的监督和评估。检查内容包括但不限于：等方面。","options":["外包服务商合规情况","外包信息安全","外包服务连续性","外包服务质量"],"answer":[0,1,2,3]},{"id":149,"q":"开展运营业务外包的目标是____。","options":["降低成本","提高效率","控制风险","提升本行核心竞争力"],"answer":[0,1,2,3]},{"id":150,"q":"分散应用是指各运营系统取得其用户授权同意后，使用其人脸或指纹进行登录、授权、审批、登记、确认、解锁等业务操作，柜员认证系统为各运营系统提供__和认证服务。","options":["身份证号码","人脸","指纹","语音"],"answer":[1,2]},{"id":151,"q":"客服经理指纹自行采集为用户自行登录系统，通过 、 和 完成指纹采集","options":["身份证识别","手机验证","关系证明","现场审批"],"answer":[0,1,3]},{"id":152,"q":"人脸、指纹采集分为____采集和____采集两种采集方式。","options":["现场","自行","无需","外包"],"answer":[0,1]},{"id":153,"q":"各级管辖行、营业机构应在严格执行内控制度的基础上，根据劳动组合和岗位职责合理设置柜员现金箱的____、____和","options":["数量","样式","币种","限额"],"answer":[0,2,3]},{"id":154,"q":"客服经理因办理业务临时离开工作台的，如放置于工作台的现金及其他物品不在客服经理可视范围内，客服经理应将其放入____、____中保管。","options":["柜员现金箱","工作台桌面上","带锁的工作台抽屉","保险柜"],"answer":[0,2,3]},{"id":155,"q":"客服经理张三休假，其柜员现金箱交接，以下说法正确的三项是____、____、____。","options":["客服经理张三休假1天，柜员现金箱必须“缴空”","客服经理张三休假1天，柜员现金箱视同日终交接","客服经理张三休假3天，柜员现金箱必须“清零”","客服经理张三休假5天，柜员现金箱必须“缴空”"],"answer":[1,2,3]},{"id":156,"q":"纸质商业汇票审验无误且相关业务办理完毕，由客户经理、票据保管人员及内勤行长（或其授权人）共同将票据装入透明票据袋中，原则上一票一封。票据袋应标明____等信息。","options":["网点机构号","封装人姓名","票据号码","票据到期日"],"answer":[0,1,2,3]},{"id":157,"q":"日终，柜员现金箱可采用____、____和____三种方式。","options":["现金不“清零”","现金“清零”","“缴空”","入库"],"answer":[0,1,2]},{"id":158,"q":"午休时,客服经理应将____、印章等物品全部入柜员现金箱保管,并将柜员现金箱上锁后放置于有效视频监控下的指定区域或入营业机构高柜服务区保险柜保管。","options":["现金","贵金属","重要空白凭证","有价单证"],"answer":[0,1,2,3]},{"id":159,"q":"下列属于柜员现金箱存放物品范围的是: ______。","options":["本外币现金","贵金属","重要空白凭证","有价单证"],"answer":[0,1,2,3]},{"id":160,"q":"授权方式包括 ______、______和______。","options":["远程授权","现场授权","移动授权","动态授权"],"answer":[0,1,2]},{"id":161,"q":"BoEing用户是指在BoEing中,按照分工权限分为: ______、______和______。","options":["人工用户","系统用户","机器用户","设备用户"],"answer":[0,1,2]},{"id":162,"q":"营业机构层级包括______四个层级。","options":["总行","一级分行","二级分行","一级支行"],"answer":[0,1,2,3]},{"id":163,"q":"总行运营管理部按照“______、______和”的原则统一确定交易的授权方式。","options":["有效控制风险","提升用户体验","提高授权效率","增加业务量"],"answer":[0,1,2]},{"id":164,"q":"柜面授权按级别分为: ______。","options":["1级","2级","3级","9级"],"answer":[0,1,2,3]},{"id":165,"q":"柜面授权按类型分为______和______。","options":["静态授权","动态授权","远程授权","现场授权"],"answer":[0,1]},{"id":166,"q":"机构拆并类型分为______。","options":["终止营业拆并","临时停业","迁址营业拆并","业务整合拆并"],"answer":[0,1,2,3]},{"id":167,"q":"拆并完成后,拆出行的BoEing机构状态分为______和______。","options":["正常","停用","临时删除","永久删除"],"answer":[0,1]},{"id":168,"q":"拆并业务范围包括______以及全业务拆并等五类。","options":["对私存款和理财","对公存款和理财","贷款","贷记卡"],"answer":[0,1,2,3]},{"id":169,"q":"下列关于机构拆并描述正确的是______。","options":["当拆出行将全部业务划转至并入行,拆出行根据拆并需求设置为停用或不停用","当拆出行只划转部分业务至并入行,拆出行拆并前后机构均不停","拆出行和并入行须隶属于同一个一级分行","同一拆并日,一个拆出行只能拆并至一个并入行"],"answer":[0,1,2,3]},{"id":170,"q":"内勤行长履行业务审批时,须审核业务或资料的______、______和______,并在业务相关资料上签署意见。","options":["真实性","合规性","完整性","美观性"],"answer":[0,1,2]},{"id":171,"q":"对于柜面业务,业务制度规定或作业规则中增加业务审批或现场审核环节,须经或______运营管理部审核确定。","options":["总行","一级分行","二级分行","一级支行"],"answer":[0,1]},{"id":172,"q":"______运营管理部管理全行性业务授权设置,______运营管理部管理本行特色业务授权设置。","options":["总行","一级分行","二级分行","一级支行"],"answer":[0,1]},{"id":173,"q":"业务审批的业务种类: ______。","options":["单位账户类业务","错账、挂账及内部账务处理","个人业务解挂及补卡、补单等后续处理事项","司法查询、冻结、解冻、扣划"],"answer":[0,1,2,3]},{"id":174,"q":"批量开实体卡或存单时,提交批交易前柜面经理必须确保重要空白凭证箱内有____凭证,且____凭证足够用于批交易开卡或存单后,再发起45162批交易请求。","options":["一段","两段","第一","第二"],"answer":[1,3]},{"id":175,"q":"单位集中领取实体借记卡或者定期存单时,单位授权经办人应提供____和____。","options":["本人有效身份证件","授权委托书","法人有效身份证","开户许可证"],"answer":[0,1]},{"id":176,"q":"客服经理办理现金业务操作必须在____和____以内,做到当面点准,____。","options":["有效监控","客户视线","一笔一清","一户一清"],"answer":[0,1,2,3]},{"id":177,"q":"BoEing用户分为____、____、____。","options":["人工用户","系统用户","机器用户","调阅用户"],"answer":[0,1,2]},{"id":178,"q":"关于BoEing转授权描述正确的是____、____、____。","options":["内勤行长短期离岗时需通过系统转授权,由被转授权人员承担内勤行长职责","纳入转授权范围名单的人员才可以接受内勤行长的转授权","被转授权人员接受转授权期间,承担内勤行长职责,具有与内勤行长相同的工作","被授权人员只能是普通柜员"],"answer":[0,1,2]},{"id":179,"q":"转岗人员须通过农业银行相应科目岗位资格认证考试,经所在二级分行或以上人力资源部门审核确认,并由____、____确认后,运营管理部门审核准入。","options":["个人金融部","内控与合规监督部","安全保卫部","公司业务部"],"answer":[1,2]},{"id":180,"q":"BoEing设备分为____、____、____。","options":["人工设备","系统设备","机器设备","监控设备"],"answer":[0,1,2]},{"id":181,"q":"营业机构在假币收缴过程中有下列____情形之一的,应当立即报告人民银行和公安机关,并在3个工作日内通过“业务运营响应平台”逐级上报至总行运营管理部。","options":["一次性发现5张(枚)以上假币与人民银行和公安机关发文另有规定的两者较小","利用新的造假手段制造的假币","获得制造、贩卖、运输、持有或者使用假币线索的","被收缴人不配合营业机构收缴行为的"],"answer":[0,1,2,3]},{"id":182,"q":"客服经理张三为客户办理美元现钞存款业务时,发现百元假币一张。应客户要求,将假币递出窗口交予客户确认后,在该张假外币上加盖“假币”字样戳记。客服经理张三存在____、____、____违规操作行","options":["单人收缴假币","收缴后客户再次接触假币","直接在美元假币上加盖“假币”章","在BoEing系统操作收缴交易"],"answer":[0,1,2]},{"id":183,"q":"货币鉴定机构应当同时具备______条件。","options":["具有人民银行颁发的《中国人民银行货币真伪鉴定授权书》，并予以公示","具有2名(含)以上具备货币真伪鉴定能力的专业人员，并明确主检人和复检人","满足鉴定需要的货币鉴定机具及相关分析技术条件","具有固定的货币真伪鉴定场所"],"answer":[0,1,2,3]},{"id":184,"q":"基金重要信息同步，指系统中登记的______、______、______等重要信息同CIF系统保持一致。","options":["客户姓名","职业","证件类型","证件号码"],"answer":[0,2,3]},{"id":185,"q":"基金业务的主要业务流程有______等。","options":["签约","购买","赎回","转换"],"answer":[0,1,2,3]},{"id":186,"q":"基金非交易过户是指因______、______、______等非交易因素，需将一只产品全部或部分份额从一个客户的TA账户内转移给另一个客户的TA账户。","options":["继承","捐赠","司法判决","赎回"],"answer":[0,1,2]},{"id":187,"q":"基金管理合约信息可以变更的内容包括和______。","options":["客户证件号码","客户名称","更换结算账户","基金分红方式设置"],"answer":[2,3]},{"id":188,"q":"授权中心应按照统一标准审核营业机构授权业务，保证业务处理的______、______，并及时记录在业务处理期间出现的业务疑难、不规范操作和特殊事项等情况，定期汇","options":["标准化","非标准化","规范化","非规范化"],"answer":[0,2]},{"id":189,"q":"远程集中授权系统分为______、______、______功能模块，对应的用户分别为客服经理，授权主管，业务管理员、授权主管和查询","options":["申请端","授权端","技术端","管理端"],"answer":[0,1,3]},{"id":190,"q":"远程集中授权涉及人员主要包括授权中心负责人、运营主管、授权主管和营业机构内勤行长、客服经理，其中营业机构内勤行长主要职责为：______、______。","options":["在业务审批时，对业务的真实性、合规性和资料的完整性负责","监督指导客服经理远程集中授权业务操作","无需核对客户身份真实性","在远程集中授权完成后，无需对客户签字等后续业务处理的真实"],"answer":[0,1]},{"id":191,"q":"远程集中授权涉及人员主要包括授权中心负责人、运营主管、授权主管和营业机构内勤行长、客服经理，其中客服经理主要职责为：______、______。","options":["无需对业务的真实性、合规性和资料的完整性负责","监督指导客服经理远程集中授权业务操作","核对客户身份真实性，按照相关业务制度对客户身份证件、现金实物、银行介质、结算凭证等真伪进行严格审核","在远程集中授权完成后，对客户签字等后续业务处理的真实性负责"],"answer":[2,3]},{"id":192,"q":"智能授权审核模式可分为____、____、____等，根据交易风险程度及业务复杂度","options":["自动审核","辅助审核","自动审核+人工复核","AI审核+辅助审核"],"answer":[0,1,2]},{"id":193,"q":"远程集中授权是指客服经理通过远程集中授权系统，将临柜须授权业务的____、____、____等实物照片等影像资料传输至授权中心，由授权中心的授权主管远程完成授权的临柜事中审核模式。","options":["交易画面","业务凭证","客户证件","监控画面"],"answer":[0,1,2]},{"id":194,"q":"专项资金托管业务是指银行根据法律法规、监管部门要求或客户委托，在____等特定用途监管资金及客户需要商业银行托管的其他专门用途的资金使用过程中保障资金安全和专款专用的托管业务。","options":["债券发行募集资金等融入资金","偿债资金等偿还资金","履约保证金等担保资金","住房租赁资金"],"answer":[0,1,2,3]},{"id":195,"q":"交易资金托管业务是指买卖双方在以____、____、____等为标的物的交易过程中，委托银行保管资金并根据约定条件办理资金支付，促使交易成立的托管业务。","options":["商品","服务","权益","负债"],"answer":[0,1,2]},{"id":196,"q":"交易资金托管合约冻结后，在《协助查询、冻结、扣划登记簿》中手工登记：____，协助冻结的时间和金额，相关法律文书名称及文号，协助结果等信息，并由有权机关执法人员和经办网点经办人员","options":["有权机关名称","执法人员姓名和证件号码","经办网点经办人员姓名","被冻结单位或个人的名称或姓名"],"answer":[0,1,2,3]},{"id":197,"q":"交易资金托管合约变更的事项包括：____。","options":["协议到期日","收、付款委托人签约账户","托管金额","托管费"],"answer":[0,1,2,3]},{"id":198,"q":"汇票专用章的使用范围包括：____、____、____。","options":["签发全国银行汇票时，在“出票人签章”处签章","承兑银行承兑汇票时，在“承兑人签章”处签章","承兑银行承兑汇票时，在“出票人签章”处签章","中国人民银行规定的其他使用范围"],"answer":[0,1,3]},{"id":199,"q":"结算专用章的使用范围是：____。","options":["发出委托收款和托收承付时，在托收凭证第三联“收款人开户银行签章”处签章","跨行使用银行承兑汇票查询（复）书时，在查询（复）书“查询（复）行签章”处签章","在提交他行的跨行网上银行支付结算凭证上签章","中国人民银行规定的其他使用范围"],"answer":[0,1,2,3]},{"id":200,"q":"客户赵六遇到电信诈骗，其在农业银行的账户资金已转入田七在农业银行的借记卡账户，要求柜面进行长期应急控制时，客户赵六应提供____材料。","options":["赵六有效身份证件","转出账户账号、转入借记卡卡号、交易金额（精确到百）、交易日期","法律责任承诺书","公安机关出具的报案回执、立案回执或公安机关未出具报案回执的情况说明"],"answer":[0,1,2,3]},{"id":201,"q":"金穗借记卡按介质不同分为____、____。","options":["磁条卡","IC卡","普通卡","磁条芯片复合卡"],"answer":[0,1,3]},{"id":202,"q":"本行客户洗钱风险等级按照洗钱风险程度从高至低依次划分为____、低风险。","options":["极高风险","高风险","中风险","中低风险"],"answer":[0,1,2,3]},{"id":203,"q":"____客户的洗钱风险等级可直接评定为低风险。","options":["境内各级党政机关","司法机关","人民解放军","事业单位"],"answer":[0,1,2,3]},{"id":204,"q":"高风险客户，综合考量金融服务与风险防控的平衡，应采取____风险控制措施。","options":["提高客户尽职调查的频率，缩短信息收集和更新的时间间隔","提高交易监测的频率及强度","为客户提供风险较高的产品和服务时，可适当提高业务办理的审批权限","根据风险控制需要，采取其他限制客户交易渠道、规模、频率或停止客户账户交易的风险控制措施"],"answer":[0,1,2,3]},{"id":205,"q":"客户洗钱风险评估和等级分类管理应遵循____原则。","options":["全面性原则","风险相当原则","动态管理原则","保密性原则"],"answer":[0,1,2,3]},{"id":206,"q":"中国农业银行客户信息保护遵循____、____的基本原则。","options":["谁主管，谁负责","谁研发，谁负责","谁使用，谁负责","谁主张，谁承担"],"answer":[0,1,2]},{"id":207,"q":"客户信息根据客户属性可分为____、____。","options":["个人客户信息","纸质信息","电子信息","对公客户信息"],"answer":[0,3]},{"id":208,"q":"各级行、各部门不得私自____客户信息。","options":["复制","截屏","拍摄","篡改"],"answer":[0,1,2,3]},{"id":209,"q":"各级行及员工应对业务过程中知悉的客户信息予以保密，不得以任何形式进行____行为。","options":["出售客户信息","未经客户许可在业务宣传、接受采访等活动中公开客户信息","向行内无关人员或行外人员泄露客户信息","向其他员工窥探、打听非本人工作职责范围内的客户信息"],"answer":[0,1,2,3]},{"id":210,"q":"在客户表示拒绝接受的情况下，应当立即停止通过____等方式营销金融产品。","options":["拨打电话","发送短信","微信","邮件"],"answer":[0,1,2,3]},{"id":211,"q":"各级行、各部门可根据与客户所签协议，在授权范围内使用客户信息开展营销，但在客户表示拒绝接受的情况下，应当立即停止通过____等方式营销金融产品。","options":["拨打电话","发送短信","微信","邮件"],"answer":[0,1,2,3]},{"id":212,"q":"客户信息收集。遵循____原则。","options":["合法","正当","必要","诚信"],"answer":[0,1,2,3]},{"id":213,"q":"各级行、各部门收集客户信息应当公开收集规则，明示收集信息的____以及同意收集信息的可能后果，并经被收集者同意","options":["目的","方式","范围","保存期限"],"answer":[0,1,2,3]},{"id":214,"q":"个人信息的____、____和____发生变更的，应当重新取得个人同意。","options":["处理目的","处理方式","无变化","处理的个人信息种类发生变更的"],"answer":[0,1,3]},{"id":215,"q":"各级行、相关部门要强化运营场所工作人员的现场管理，对____、____、____的手机以及其他具备拍照及存储功能的移动设备实行集中保管，严防利用工作便利拍摄交易截图、传票影像等资料。","options":["临柜人员","集中作业人员","客服人员","物业人员"],"answer":[0,1,2]},{"id":216,"q":"客户信息实行分级授权管理，根据客户信息的重要性、敏感度及业务开展需要，在不影响履行反洗钱等法定义务的前提下，采取相应的安全技术措施，合理确定各级员工处理信息的____、____、____。","options":["范围","权限","程序","规矩"],"answer":[0,1,2]},{"id":217,"q":"销售人员从事理财产品销售活动，应当遵循____原则。","options":["勤勉尽职","诚实守信","公平对待投资者","专业胜任"],"answer":[0,1,2,3]},{"id":218,"q":"对于无法机读的二代身份证或其他身份证件，须选择人行核查，结合核查结果，判断是否需要客户提供辅助身份证明材料，以进一步核实确认客户身份。____属于辅助身份证证明材料。","options":["户口簿","社会保障卡","机动车驾驶证","居住证"],"answer":[0,1,2,3]},{"id":219,"q":"联网核查模块提供____、____、____等核查方式。","options":["人行核查","行内核查","组合核查","非接口核查"],"answer":[0,1,2]},{"id":220,"q":"联网核查结果返回后，柜面人员如无法确定客户二代身份证的真实性，应采取____、____、____至少一种方式进一步核实。","options":["邮件向公安机关核实","使用二代身份证阅读器进行鉴别","要求客户出示辅助身份证明材料","客户持本行出具的联网核查结果证明，到公安机关核实后的结果"],"answer":[1,2,3]},{"id":221,"q":"联网核查模块和人行核查系统同时出现故障的，应优先使用____进行鉴别，无法鉴别时，应要求客户出示____，能证明确属真实证件的，可继续办理业务，并留存客户身份证件复印件。","options":["二代身份证阅读器","人脸识别","辅助身份证明材料","承诺函"],"answer":[0,2]},{"id":222,"q":"客户赵六在柜面办理存单挂失补发业务时，二代身份证联网核查结果“公民身份号码与姓名一致，但不存在照片（行内核查）”，柜面无法确定为虚假证件的，应进行____、____处理。","options":["拒绝办理","直接办理","使用二代身份证阅读器进行鉴别","要求客户出示辅助身份证明材料"],"answer":[2,3]},{"id":223,"q":"联网核查应急处理过程中，应加强客户个人信息保护，避免发生个人信息的____、____。","options":["泄露","篡改","丢失","清理"],"answer":[0,1,2]},{"id":224,"q":"初次接入联网核查模块时，总分行业务部门需详细描述联网核查的____、调用方式、业务流程、业务量、客户信息保护和数据使用安全等。","options":["使用目的","使用对象","业务场景","业务流程"],"answer":[0,1,2,3]},{"id":225,"q":"对二代身份证开展组合核查，核查结果为____，如能确定为虚假证件的，应拒绝办理业务。","options":["公民身份号码存在，但与姓名不匹配","公民身份号码不存在","公民身份号码存在，但与姓名不匹配（行内核查）","人行核查失败，且我行未留存该客户信息"],"answer":[0,1,2,3]},{"id":226,"q":"企业纳税状态核查和企业登记注册信息核查，暂仅限于____、____、____等业务。","options":["企业银行账户开立","企业银行账户变更","企业银行账户撤销","机关事业单位账户开立"],"answer":[0,1,2]},{"id":227,"q":"手机号码核查暂仅限于办理____及人民银行允许的其他业务。","options":["企业银行账户开立","企业银行账户变更","企业银行账户撤销","人民银行允许的其他业务"],"answer":[0,1,2,3]},{"id":228,"q":"企业信息联网核查系统支持____、____、____核查功能。","options":["手机号码","企业纳税状态","企业登记注册信息","身份证件"],"answer":[0,1,2]},{"id":229,"q":"用印审批岗在营业期间用印时，发现印控仪印章脱落，需要进行机具维护，应执行____等操作。","options":["用印审批岗执行开启电子锁交易","印控仪操作岗使用机械锁钥匙打开印控仪安全门","维修完毕后，用印审批岗执行关闭电子锁交易，印控仪操作岗关","用印审批岗应使用“印章校准”核对机具内印章安装情况"],"answer":[0,1,2,3]},{"id":230,"q":"按照人民银行等有权机关要求统一设计，应用于柜面作业的印章包括____等。","options":["汇票专用章","假币章","本票专用章","结算专用章"],"answer":[0,1,2,3]},{"id":231,"q":"临柜业务实物印章管理实行____的原则","options":["严格准入","主体明确","分级管理","严控风险"],"answer":[0,1,2,3]},{"id":232,"q":"手工用印模式下，未纳入印控仪保管的临柜业务实物印章由用印申请人负责用印业务的____、____、____。","options":["观赏性","真实性","完整性","合规性"],"answer":[1,2,3]},{"id":233,"q":"未纳入印控仪管理的临柜业务实物印章应做到____。","options":["专人专用","专人负责","妥善保管","人离章收"],"answer":[0,1,2,3]},{"id":234,"q":"有关临柜业务实物印章管理和岗位制约，下列描述正确的是____。","options":["手工管理模式的临柜业务实物印章，须与配套使用的重要空白凭证实行“印证分","机控管理模式下，用印审批岗及印控仪操作岗须平行交接","临柜业务实物印章管理系统中业务管理员和系统管理员不得混岗","印控仪备用钥匙应上交至支行或以上运营管理部门统一封存管理"],"answer":[0,1,2,3]},{"id":235,"q":"因____、____、____等原因重新刻制的临柜业务实物印章均应使用新的序号，不得与原临柜业务实物印章的序号相同。","options":["磨损","遗失","损毁","新增"],"answer":[0,1,2]},{"id":236,"q":"单一客户或集团总部申请票据池签约和维护，须提交____资料。","options":["统一社会信用代码证复印件","法定代表人有效身份证件复印件、经办人有效身份证件原件及授","中国农业银行票据池合约管理申请表","中国农业银行票据池业务服务协议"],"answer":[0,1,2,3]},{"id":237,"q":"票易贴申请人价格维护确认，客户经理提交____、____资料。","options":["银行承兑汇票票易贴参数维护申","银行承兑汇票票易贴解约表","经有权审批人审批的贴现价格审","贴现价格申请单"],"answer":[0,2]},{"id":238,"q":"票据通是指本行为对公客户提供电子商业汇票____等的票据综合管理服务。","options":["集中查询","授权管理","动态担保","线上贴现"],"answer":[0,1,2,3]},{"id":239,"q":"票据池业务中，入管理池票据仅限于票据状态为____或____、流通标志为“可流通”、且尚未到期的电子商业汇票。","options":["已收票","已结清","已质押","已清偿"],"answer":[0,2]},{"id":240,"q":"经营机构在受理票据____、委托收款，以及票据凭证移交各环节中，均须进行票据真伪审验。","options":["承兑","贴现","质押","到期兑付"],"answer":[0,1,2,3]},{"id":241,"q":"企业金融服务平台证书激活方式分为____和____。","options":["手机短信激活","微信激活","人脸认证激活","电话激活"],"answer":[0,2]},{"id":242,"q":"办理企业金融服务平台业务的经办行，包含____、____、____。","options":["注册行","授权账户开户行","经授权的集中办理行","远程银行中心"],"answer":[0,1,2]},{"id":243,"q":"操作人员是指企业金融服务平台的管理员和操作员。操作人员管理包括操作人员____、____、____。","options":["新增","维护","删除","替换"],"answer":[0,1,2]},{"id":244,"q":"根据业务场景，银企直联分为____、____、____等形式。","options":["银企通银企直联","企业网银银企直联","跨境电商金融服务直联","电话银行直联"],"answer":[0,1,2]},{"id":245,"q":"企业金融服务平台证书管理包括____等","options":["证书申请","证书补办","证书激活","补打两码"],"answer":[0,1,2,3]},{"id":246,"q":"银企直联是指客户通过第三方软件接入农业银行系统，第三方软件包括____、____和____等。","options":["Boeing系统","企业资源计划(ERP)","财资管理软件","业务信息系统"],"answer":[1,2,3]},{"id":247,"q":"企业金融服务平台服务渠道包含____。","options":["企业网银","企业掌银","企业微信银行","企业消息服务"],"answer":[0,1,2,3]},{"id":248,"q":"首次在我行开立人民币单位银行结算账户，并申请开通企业金融服务平台的客户，客户经理应按照____和____进行客户身份初次识别和尽职调查工作。","options":["《中国农业银行对公客户身份识别与尽职调查管理办法》","《中国农业银行人民币单位银行结算账户业务尽职调查操作规程》","《中国农业银行对公存款业务柜面作业规则》","《中国农业银行对公信贷资产业务柜面作业规则》"],"answer":[0,1]},{"id":249,"q":"企业网银证书激活方式分为____和____。","options":["自助设备激活","柜台激活","手机短信激活","人脸认证激活"],"answer":[2,3]},{"id":250,"q":"客户办理企业网银、银企通客户端签约业务须向____或____申请。","options":["信用卡中心","注册行","反洗钱中心","经授权的集中办理行"],"answer":[1,3]},{"id":251,"q":"对存在下列____情形的企业，应当加强风险识别，对于存在可疑情形的，应当按照反洗钱等规定延长开户审查期限、通过上门核实等手段强化客户尽职调查，必要时拒绝开户。","options":["法定代表人或单位负责人对企业经营规模及业务背景不熟悉","企业注册地和经营地均在异地","单位名称明显异常或不合常理","法定代表人或单位负责人身份明显异常，如老年人、学生、无职业者等"],"answer":[0,1,2,3]},{"id":252,"q":"对存在下列情形的企业，应当拒绝开户____。","options":["客户所提供的有关证明文件为虚假证件","客户所提供的身份证明文件不在有效期内","假冒他人身份或者虚构代理关系","经核实单位注册地址不存在或者虚构经营场所"],"answer":[0,1,2,3]},{"id":253,"q":"企业____、____、____基本存款账户、临时存款账户实行备案制。","options":["开立","变更","撤销","终止"],"answer":[0,1,2]},{"id":254,"q":"开户行应当审核企业开户证明文件的____、____、____、开户申请人与开户证明文件所属人的一致性，以及企业开户意愿的真实性。","options":["真实性","完整性","合规性","多样性"],"answer":[0,1,2]},{"id":255,"q":"我行分支机构为境内依法设立的____、____、____（以下统称企业）办理银行结算账户业务适用中国农业银行企业银行结算账户管理办法。","options":["企业法人","非法人企业","个体工商户","机关事业单位"],"answer":[0,1,2]},{"id":256,"q":"为企业开立基本存款账户，发现法定代表人或单位负责人对企业经营规模及业务背景不熟悉，可采取____、____方式核实法定代表人开户意愿。","options":["法定代表人到开户行核实","行内人员上门核实","远程视频核实","电话核实"],"answer":[0,1]},{"id":257,"q":"为某注册地和经营地均在异地的企业开立基本存款账户，可采取____、____方式核实法定代表人开户意愿。","options":["法定代表人到开户行核实","行内人员上门核实","远程视频核实","短信核实"],"answer":[0,1]},{"id":258,"q":"法定代表人或单位负责人对企业经营规模及业务背景不熟悉，情形可疑，可采取____、____等手段强化客户尽职调查。","options":["按照反洗钱等规定延长开户审查期限","通过上门核实等手段强化客户尽职调查","直接拒绝开户","继续为客户开立对公账户"],"answer":[0,1]},{"id":259,"q":"某网点在为某对公客户开立账户时，发现其法定代表人同时注册了10个企业时，可采取的措施包括：____、____。","options":["按照反洗钱等规定延长开户审查期限","通过上门核实等手段强化客户尽职调查","直接拒绝开户","继续为客户开立对公账户"],"answer":[0,1]},{"id":260,"q":"因变更、撤销取消许可前____、____而收回的原开户许可证原件或相关说明，开户行应当交回人民银行分支机构。","options":["基本存款账户","个人储蓄账户","个人结算账户","临时存款账户"],"answer":[0,3]},{"id":261,"q":"银行结算账户是指《人民币银行结算账户管理办法》规定的____。","options":["基本存款账户","一般存款账户","专用存款账户","临时存款账户"],"answer":[0,1,2,3]},{"id":262,"q":"收汇业务的处理要求有：____、____、____。","options":["严禁垫付","提高效率","及时查询","允许垫付"],"answer":[0,1,2]},{"id":263,"q":"清算业务应遵循以下基本原则____。","options":["合规为先","集中清算","智慧运营","高效服务"],"answer":[0,1,2,3]},{"id":264,"q":"____情况下存款人可以申请开立临时存款账户。","options":["设立临时机构","异地临时经营活动","注册验资","增资验资"],"answer":[0,1,2,3]},{"id":265,"q":"进行“黄金表外账户开户”，根据业务需要分“____”个不同类型开立。","options":["成品","破损","长库","短库"],"answer":[0,1,2,3]},{"id":266,"q":"下列属于委托缴款协议个人账户状态异常的有____。","options":["销户","睡眠","全封","半封"],"answer":[0,1,2,3]},{"id":267,"q":"下列属于委托缴款协议支持签约的账户类型的有____。","options":["对公账户","借记卡","对公多级账簿","内部户"],"answer":[0,1,2,3]},{"id":268,"q":"委托缴款协议是____、____、____共同签订的协议。","options":["我行营业机构","征收机关","纳税人","代理人"],"answer":[0,1,2]},{"id":269,"q":"审核委托缴款协议是否是统一制式文本，各方签字盖章是否齐全、完整。签约账户为对公账户的，须核验____和____。","options":["公章","预留印鉴","财务专用章","出资人私章"],"answer":[0,1]},{"id":270,"q":"中国人民银行国库信息处理系统通过电子处理手段实现税费收入的____等业务处理","options":["征缴","入库","退库","更正"],"answer":[0,1,2,3]},{"id":271,"q":"特殊群体服务遵循的基本原则：____。","options":["首问负责，主动服务","耐心沟通，专属服务","保障权益，优质服务","特事特办，及时跟进"],"answer":[0,1,2,3]},{"id":272,"q":"网点通用服务礼仪包括____。","options":["仪容仪表、形体仪态","表情神态、沟通语言","接待礼仪、电话礼仪","会议礼仪、社交礼仪"],"answer":[0,1,2,3]},{"id":273,"q":"以下____属于网点服务管理基本原则。","options":["提升体验","创造价值","协作高效","安全规范"],"answer":[0,1,2,3]},{"id":274,"q":"“七步曲”规范服务包括：____、巧推荐、提醒递和目相送。","options":["站相迎（招手迎）","笑相问","礼貌接","及时办"],"answer":[0,1,2,3]},{"id":275,"q":"以下____属于网点服务突发事件应急处理原则。","options":["快速响应、及时报告","积极稳妥","协调配合","保守银行和客户秘密"],"answer":[0,1,2,3]},{"id":276,"q":"以下____属于网管会工作原则。","options":["前瞻性原则","规范性原则","及时性原则","民主性原则"],"answer":[0,1,2,3]},{"id":277,"q":"网点规划应以全行改革发展规划为指导，按照“____”的原则。","options":["控制总量","优化布局","调整结构","提升效能"],"answer":[0,1,2,3]},{"id":278,"q":"根据网点功能定位，将网点分为____。","options":["核心网点","骨干网点","轻型网点","特色网点、自助网点"],"answer":[0,1,2,3]},{"id":279,"q":"网点功能分区包括：____。","options":["智能服务区、综合服务区","营销服务区、集中办公区","高柜服务区、自助服务区","财富管理区"],"answer":[0,1,2,3]},{"id":280,"q":"根据网点功能定位，将网点分为____和自助网点等类型，实施分类管理。","options":["核心网点","骨干网点","轻型网点","特色网点"],"answer":[0,1,2,3]},{"id":281,"q":"以下属于网点建设管理的基本原则的是____。","options":["统一管理，分级授权","统一规划，合理布局","统一分类，差异管理","统一形象，规范建设"],"answer":[0,1,2,3]},{"id":282,"q":"设备生命周期管理包括____。","options":["设备采购管理","设备开通管理、设备迁移管理","设备报废管理","低效设备白名单管理"],"answer":[0,1,2,3]},{"id":283,"q":"网点设备停机管理包括____。","options":["停机申请","停机复核","停机审批","恢复运行"],"answer":[0,1,2,3]},{"id":284,"q":"网点设备停机原因包括____。","options":["网点装修","设备迁址核","故障维修","设备关停"],"answer":[0,1,2,3]},{"id":285,"q":"网点设备管理系统包含用户角色管理、____、特色功能管理、统计报表管理等功能模块。","options":["基础信息管理","生命周期管理","设备监控管理","设备控制管理"],"answer":[0,1,2,3]},{"id":286,"q":"网点设备管理系统系统角色包括：____、程序管理员、总行应用支持、行外人员等","options":["系统管理员","系统操作员","监控员","SIMS管理员（排队叫号机）"],"answer":[0,1,2,3]},{"id":287,"q":"下面哪些设备纳入网点设备管理系统管理____、____。","options":["自助现金终端","智慧货架","超级柜台","自助服务终端"],"answer":[0,2,3]},{"id":288,"q":"关于网点营业场所现场管理，以下说法正确的是：____。","options":["内勤行长负责监督客服经理执行“一日两碰箱”规定","客户输入密码时员工应主动回避","严禁网点现场人员违规查询、下载、复印、截屏打印、拍摄、抄写客户信息","严禁代客户操作、代客保管各类支付工具、有效身份证件等重要物品"],"answer":[0,1,2,3]},{"id":289,"q":"某内勤行长发现某保险公司销售人员在网点向客户推介保险产品，应____、____、____。","options":["与保险公司人员共同开展营销","书面报告上级行运营管理部门","书面报告业务主管部门","及时制止、警告并劝离"],"answer":[1,2,3]},{"id":290,"q":"网点现场管理产品宣传应____。","options":["不得使用带有诱惑性、误导性或易引发争议的语句","无虚假、过期宣传","无诋毁、贬低同业","无误导客户现象"],"answer":[0,1,2,3]},{"id":291,"q":"网点现场员工在智能服务区辅助客户办理业务时，应____。","options":["加强人证一致及业务场景真实性审核","严格执行开卡、开户实名制要求","客户输入密码时应主动回避","严禁代客户操作、代客保管各类支付工具、有效身份证件等重要物品"],"answer":[0,1,2,3]},{"id":292,"q":"网点营业场所现场管理应遵循____原则。","options":["实行网点负责人负责制的原则","实行准入管理的原则","实行一体化管理的原则","实行统一管理与分工负责相结合的原则"],"answer":[0,1,2,3]},{"id":293,"q":"需人工核销的贷记来账应在收到来账____至迟不超过____核销完毕。","options":["当日","三个工作日","四个工作日","六个工作日"],"answer":[0,1]},{"id":294,"q":"贷记来账业务按照入账方式分为____和____。","options":["实时入账","直接入账","延时入账","人工核销入账"],"answer":[1,3]},{"id":295,"q":"客户申请开通银企直联渠道，需与本行签订____和____，填写____，各成员单位还需填写《现金管理业务授权书》。","options":["《现金管理服务协议》","《银企直联三方合作协议》","《企业金融服务平台申请表（银企通）》","《支票业务服务协议》"],"answer":[0,1,2]},{"id":296,"q":"资金保付业务涉及的收费项目主要有____。","options":["平台系统服务费","平台交易手续费","平台资金保付交易信息服务费","信息通知服务费"],"answer":[0,1,2,3]},{"id":297,"q":"对公结算账户资金归集关系维护主要涉及____、____收费。","options":["资金归集手续费","资金划拨手续费","掌银年费","委托贷款手续费"],"answer":[0,1,3]},{"id":298,"q":"资金归集手续费、资金划拨手续费的收费基数包括____、____、____。","options":["按金额","按笔数","按包月","按币种"],"answer":[0,1,2]},{"id":299,"q":"下列关于资金归集描述正确的是____、____、____。","options":["贷款账户不得建立资金归集关系","贷款账户可以建立资金归集关系","农民工工资专用账户不得建立资金归集关系","客户洗钱和恐怖融资风险等级为极高风险类、高风险类的禁止签约资金归集产品"],"answer":[0,2,3]},{"id":300,"q":"易捷收款业务目标方为个人银行结算账户的，须出具目标方____、____、____。","options":["有效身份证件原件及复印件","借记卡","定期一本通","活期结算存折"],"answer":[0,1,3]},{"id":301,"q":"现金管理业务涉及管理行和经办行。管理行是指____。","options":["总行","一级分行","二级分行","一级支行"],"answer":[0,1,2,3]},{"id":302,"q":"现金管理业务汇兑群组服务交易可在账户____和____操作。","options":["一级分行","二级分行","开户行","授权行"],"answer":[2,3]},{"id":303,"q":"客户办理账户支付限额服务业务，柜面人员应审核客户所提供证件资料的____。","options":["真实性","完整性","合规性","有效性"],"answer":[0,1,2,3]},{"id":304,"q":"某人民法院一名执行人员前来我行柜面要求办理协助扣划业务，至少需提供____、____。","options":["本人有效工作证件","户口簿","加盖县级以上人民法院公章的协助扣划存款通知","执行裁定书或判决书等生效法律文书"],"answer":[0,2,3]},{"id":305,"q":"协助司法机关查询、冻结和扣划是指我行协助____等司法机关查询、冻结和扣划在我行开户的单位或个人账户涉案存款、汇款等财产的行为。","options":["公安机关","国家安全机关","人民检察院","人民法院"],"answer":[0,1,2,3]},{"id":306,"q":"客服经理须告知办卡相关规定，落实“三亲见”，即____、____、____。","options":["亲见客户本人","亲见客户签名","亲见客户身份证件与必要的资信证明材料原件","亲见客户社保卡"],"answer":[0,1,2]},{"id":307,"q":"____的信用卡激活后才能使用。","options":["新开卡","到期换卡","损坏换卡","挂失补卡"],"answer":[0,1,2,3]},{"id":308,"q":"下列关于移动授权设备描述正确的是：____。","options":["内勤行长已领用的移动授权设备，由本人使用和保管","空闲时要及时锁屏并妥善保管","严禁未经本机构内勤行长允许擅自改变设备用途和换人使用","营业结束，严禁将设备带离营业场所"],"answer":[0,1,2,3]},{"id":309,"q":"内勤行长对移动授权业务的____负主要责任。","options":["合规性","真实性","资料完整性","要素录入的准确性"],"answer":[0,1,2,3]},{"id":310,"q":"关于银行本票，以下说法正确的是：____。","options":["银行本票是银行签发的，承诺自己在见票时无条件支付确定的金额给收款人或者持票人的票据","银行本票一式两联，第一联卡片，第二联本票","签发银行本票应换人实时复核，超过规定限额的，须经主管授权","银行本票的挂失与解挂、法院止付与解除法院止付出出票行办理"],"answer":[0,1,2,3]},{"id":311,"q":"办理银行汇票的____应经内勤行长审批。","options":["挂失","解除挂失","法院止付","解除法院止付"],"answer":[0,1,2,3]},{"id":312,"q":"银行汇票按照使用范围分为____和____。","options":["全国银行汇票","华东三省一市银行汇票","省辖银行汇票","银行本票"],"answer":[0,1,2]},{"id":313,"q":"同业存放账户管理遵循“____”的基本原则。","options":["业务归口管理","运营统一扎口","账户分类使用","机构分级管控"],"answer":[0,1,2,3]},{"id":314,"q":"同业存放账户按币种分为____和____。","options":["人民币同业存放账户","外币同业存放账户","同业存放结算账户","同业存放定期账户"],"answer":[0,1]},{"id":315,"q":"同业存放账户按功能分为____和____。","options":["同业存放账户","外币同业存放账户","同业存放结算账户","同业存放定期账户"],"answer":[2,3]},{"id":316,"q":"某会计师事务所员工现场到我行营业网点营业柜台现场提交《银行询证函》，下列说法正确的是：","options":["须提供经办人员身份证件","单位出具的介绍信","网点对经办人员的有效身份证件进行联网核查","客服经理留存身份证复印件和介绍信。"],"answer":[0,1,2,3]},{"id":317,"q":"关于客服经理主要工作职责包括：____。","options":["厅堂服务及现场管理","柜面业务办理","厅堂智能设备业务审核","客户转介绍及辅助外拓服务"],"answer":[0,1,2,3]},{"id":318,"q":"客服经理培训内容主要包括____、____和____三方面。","options":["业务操作","营销服务","风险合规","消防安全"],"answer":[0,1,2]},{"id":319,"q":"无临柜职责的客服经理最长任职年限为____，轮岗时间不少于____。","options":["五年","四年","六个月","一个月"],"answer":[0,2]},{"id":320,"q":"客服经理____应履行有关审批手续，并按要求办理交接。","options":["轮岗","转岗","休假","离职"],"answer":[0,1,2,3]},{"id":321,"q":"客服经理管理遵循____、____、____的原则。","options":["效能优先","合规为本","动态调整","一般管理"],"answer":[0,1,2]},{"id":322,"q":"柜台窗口设置醒目的____、____、____标识。","options":["快速业务通道","爱心窗口","军人、退役军人优先","红色通道"],"answer":[0,1,2]},{"id":323,"q":"网点服务礼仪包括____和____。","options":["通用服务礼仪","接待礼仪","岗位服务礼仪","商务礼仪"],"answer":[0,2]},{"id":324,"q":"客服经理培训类型分为____和____。","options":["岗前培训","委托培训","在岗培训","自学"],"answer":[0,2]},{"id":325,"q":"客服经理岗位共分____、____、____层级","options":["见习客服经理","助理客服经理","客服经理","高级客服经理"],"answer":[1,2,3]},{"id":326,"q":"网点服务管理基本原则是：____。","options":["提升体验","创造价值","协作高效","安全规范"],"answer":[0,1,2,3]},{"id":327,"q":"下列关于内勤行长管理描述正确的是____。","options":["严禁强行向内勤行长分配业务经营指标","严禁强行向内勤行长分配营销任务","严禁违规干预、刁难或故意设置障碍影响内勤行长正常工作","严禁对内勤行长坚持原则的行为打击报复"],"answer":[0,1,2,3]},{"id":328,"q":"网点设备是指在网点布放使用的运营类设备（不含科技生产类和安全保卫类设备），分为：____。","options":["自助（智能）设备","柜面设备","营销宣传设备","外部引入设备"],"answer":[0,1,2,3]},{"id":329,"q":"下列属于柜面设备的是____。","options":["印控仪","点钞机","清分机","智能影像仪"],"answer":[0,1,2,3]},{"id":330,"q":"下列属于营销宣传设备____、____。","options":["LED显示屏","电子利率牌","智能大屏","政务设备"],"answer":[0,1,2]},{"id":331,"q":"下列属于外部引入设备的是____。","options":["零售机","营销机器人","公积金设备","政务设备"],"answer":[0,1,2,3]},{"id":332,"q":"网点设备管理坚持以下原则：____。","options":["归口管理，分工负责","统一标准，严格准入","系统管控，集约经营","渠道协同，服务创新"],"answer":[0,1,2,3]},{"id":333,"q":"因____对我行品牌和声誉造成严重不良影响的，按照有关规定追究相关责任人责任","options":["因服务不到位","客户异议处理不到位","客户纠纷处理不到位","客户投诉处理不到位"],"answer":[0,1,2,3]},{"id":334,"q":"客户申请开立____等及经中国人民银行批准的其他存款账户，除相关业务制度另有规定外，必须预留印鉴。","options":["单位银行结算账户","单位定期存款","单位协议存款","单位通知存款"],"answer":[0,1,2,3]},{"id":335,"q":"预留印鉴卡模板式样由____设计，____组织印制。","options":["总行","分行","支行","网点"],"answer":[0,1]},{"id":336,"q":"预留印鉴卡是指记载客户的____等信息的纸质卡片。","options":["账户户名","账号","启用和注销日期","预留银行签章式样"],"answer":[0,1,2,3]},{"id":337,"q":"开户行应在为客户办理银行账户____、____手续时，一并办理客户印鉴的预留。","options":["开立","注销","变更","暂停"],"answer":[0,2]},{"id":338,"q":"“三化三铁”工作是指通过持续推进业务操作的“标准化、规范化、制度化”，促进营业机构和运营后台中心、现金中心实现“____、____、____”的目标，不断提升全行运营基础管理水平和风险防控能力","options":["铁账","铁款","铁算盘","铁规章"],"answer":[0,1,3]},{"id":339,"q":"“三化三铁”工作等级评定分为三铁、____、____、____四个等级，每年进行一次考核评定，考评年度为上年10月1日至本年9月30日。","options":["良好","达标","不达标","不合格"],"answer":[0,1,2]},{"id":340,"q":"“三化三铁”工作是指通过持续推进业务操作的“____、____、____”，促进营业机构和运营后台中心、现金中心实现“铁账、铁款、铁规章”的目标，不断提升全行运营基础管理水平和风险防控能力。","options":["标准化","规范化","制度化","合规化"],"answer":[0,1,2]},{"id":341,"q":"“三化三铁”中“铁款”是指____、____及____管理安全规范，账款、账实完全一致，无风险隐患。","options":["现金","贵金属","有价单证","K宝"],"answer":[0,1,2]},{"id":342,"q":"运营档案定期保管期限包括____、____两种。","options":["6年","10年","16年","30年"],"answer":[1,3]},{"id":343,"q":"运营档案库分类包括____、____。","options":["中心库","支行库","凭证库","重空库"],"answer":[0,1]},{"id":344,"q":"对符合以下情形之一表现突出的，应给予核查人员表彰奖励：____。","options":["在核查中发现重大违规行为、风险损失或案件线索，及时上报的","在核查中发现重大风险隐患及时上报，避免潜在风险损失的。","在核查中发现制度、系统、流程及产品设计中的重大缺陷的。","认真负责，能力突出，创新核查方法被分行推广应用的。"],"answer":[0,1,2,3]},{"id":345,"q":"二级运营风险事件：形成实际损失金额____万元以上____万元以下的，或形成风险金额1000万元以上3000万元以下的运营风险事件。","options":["10","20","500","1000"],"answer":[2,3]},{"id":346,"q":"三级运营风险事件：形成实际损失金额____万元以上____万元以下的，或形成风险金额500万元以上1000万元以下的运营风","options":["10","100","500","4000"],"answer":[1,2]},{"id":347,"q":"四级运营风险事件：形成实际损失金额____万元以上____万元以下的，或形成风险金额100万元以上500万元以下的运营风险事件。","options":["10","100","2000","4000"],"answer":[0,1]},{"id":348,"q":"五级运营风险事件：形成实际损失金额____万元以下的，或形成风险金额____万元以下的运营风险事件。","options":["10","100","400","4000"],"answer":[0,1]},{"id":349,"q":"一级运营风险事件：形成实际损失金额____万元以上的（“以上”均含本数），或形成风险金额____万元以上的运营风险事件。","options":["10","50","1000","3000"],"answer":[2,3]},{"id":350,"q":"运营监督检查的目的是____。","options":["促进全行运营业务合规操作","防控运营风险事件","减少运营风险隐患","不断提高运营基础管理水平"],"answer":[0,1,2,3]},{"id":351,"q":"运营监督检查坚持____原则。","options":["风险导向","独立运行","集中监控","注重实效"],"answer":[0,1,2,3]},{"id":352,"q":"运营监督检查是指各级行运营管理部门对全行的运营业务，进行____和纠偏的管理行为。","options":["监测","监督","检查","辅导"],"answer":[0,1,2,3]},{"id":353,"q":"BoEing用户号的日常管理包括____、____和____等内容。","options":["建立","锁屏","注销","变动"],"answer":[0,2,3]},{"id":354,"q":"BoEing用户号管理遵循____的基本原则。","options":["严格准入","统一审核","集中维护","及时退出"],"answer":[0,1,2,3]},{"id":355,"q":"下列有关BoEing用户号描述正确的是____、____、____。","options":["用户号使用人员应妥善保管本人的用户号及密码，特殊情况下，可将本人用户号交予他人操","临时离开工位，须及时退出系统或锁屏","严禁使用他人用户号操作相关业务系统","严禁配合用户号使用人员违规进行业务处理"],"answer":[1,2,3]},{"id":356,"q":"用户号使用人员应具备以下任职条件：____","options":["遵纪守法，尽职守则，无重大不良行为和严重违规违纪记录。","具备岗位所要求的基本专业技能。","经过相应业务系统的操作培训和系统使用安全教育，熟悉相关系统业务操作。","用户号使用人员应具备相应岗位的任职资格。"],"answer":[0,1,2,3]},{"id":357,"q":"BoEing角色类型分为：____、____、____","options":["机构角色","用户角色","设备角色","主角色"],"answer":[0,1,2]},{"id":358,"q":"关于电子商业汇票，以下说法正确的是____、____、____。","options":["电子商业汇票为定日付款票据。","付款期限自出票日起，至到期日止，最长不得超过61个月。","电子商业汇票分为电子银行承兑汇票、电子财务公司承兑汇票和电子商业承兑汇","电子商业汇票以人民币为计价单位。"],"answer":[0,2,3]},{"id":359,"q":"关于查询查复，下列说法正确的是____。","options":["收到查询、查复应当日处理，至迟不得超过下一个工作日上午","发出查询第三个工作日仍未收到查复的，应再次发出，并联系其上级行督促查办","往账业务发出查询，查询书专夹保管","来账业务发出查询，查询书与来账凭证一并专夹保管，待收到查复后做相应处理"],"answer":[0,1,2,3]},{"id":360,"q":"以下关于银行本票说法正确的是____。","options":["申请人或收款人为单位的，不得签发现金本票","申请书填明“现金”字样的，申请人和收款人均为个人才可签发","申请书上填明的申请日期为当天","对客户办理银行本票业务，经办行应做好客户信息的保护"],"answer":[0,1,2,3]},{"id":361,"q":"客户申请解约电子商业汇票业务时，应向受理行/签约行提交以下资料：____。","options":["加盖公章的《电子商业汇票业务开通申请表》","法定代表人（单位负责人）有效身份证件及复印件","授权他人办理的，需出具授权书，同时提交法定代表人（单位负责人）及被授权人有效身份证","营业执照原件及复印件"],"answer":[0,1,2,3]},{"id":362,"q":"华东三省一市银行汇票中的“三省一市”指：____。","options":["江苏省","浙江省","安徽省","上海市"],"answer":[0,1,2,3]},{"id":363,"q":"下列关于银行汇票说法正确的是____。","options":["申请人或收款人为单位的，不得签发现金汇票","申请书填明“现金”字样的，申请人和收款人均为个人才可签发","对客户办理银行汇票业务，经办行应做好客户信息的保护","出票行发现或有合理理由怀疑客户、客户的资金或者其他资产、客户的交易或者试图进行的交易与洗钱、涉赌涉诈等犯罪活动相关，应拒绝办理业务，并及时手"],"answer":[0,1,2,3]},{"id":364,"q":"下列哪些业务类型属于借报业务汇划业务规定的范围：____。","options":["上级行对下级行由于银行卡、ATM、POS等业务形成单边账的收款","上级行对下级行中间业务手续费的收款","实行集中采购的资金或费用分解的收款","上级行对下级行借款利息的收款"],"answer":[0,1,2,3]},{"id":365,"q":"____、____业务，业务条线部门须填写转账凭证，提供资金汇划依据，转账凭证上加盖业务条线部门公章，如果无部门公章，以部门负责人签字代。","options":["内部资金清算（划拨）","外币内部资金划拨业务","单位客户汇款业务","个人客户汇款业务"],"answer":[0,1]},{"id":366,"q":"法定代表人（负责人）授权代理人办理对公账户开户业务的，被授权人应出具合法的____、____。","options":["授权委托书","身份证件原件","身份证复印件","本人照片"],"answer":[0,1,2]},{"id":367,"q":"零余额账户包括____和____。","options":["财政零余额账户","预算单位零余额账户","企业基本存款账户","企业专用账户"],"answer":[0,1]},{"id":368,"q":"中央财政国库集中支付业务包括国库集中支付业务（含____）、托收、资金清算、对账，以及财政部明确的其他业务。","options":["现金","转账","公务卡报销","工资或惠民惠农一卡通等其他批量支付"],"answer":[1,2]},{"id":369,"q":"各行机构业务部门负责代理中央财政国库集中支付业务的管理，组织、管理、协调辖内各分支机构对中央预算单位的营销维护工作，以及辖内相关业务的____等管理","options":["指导","培训","监督","评价"],"answer":[0,1,2,3]},{"id":370,"q":"财政部和中央预算单位零余额账户的管理应遵守财政部、人民银行有关零余额账户管理的相关规定，零余额账户的____、____、和____必须取得财政部的同意后方","options":["开立","变更","消息","撤销"],"answer":[0,1,3]},{"id":371,"q":"客服经理凭证箱中凭证内部作废：内勤行长对客服经理凭证箱中凭证内部作废业务的____、____进行审查，并在客服经理填制的业务凭证上审批签章。","options":["真实性","完整性","及时性","合规性"],"answer":[0,1,3]},{"id":372,"q":"凭证销毁时，填制《有价单证和重要空白凭证销毁表》，应由____共同监销，并在销毁表签字。","options":["业务部门","运营管理部门","金库","保卫部门"],"answer":[0,1,2,3]},{"id":373,"q":"本行重要空白凭证包括本行印制的无面额的____、____。","options":["保单","存单","存折","税务发票"],"answer":[1,2]},{"id":374,"q":"重要空白凭证管理遵循“____”的基本原则。","options":["严格准入","分工配合","系统机控","适时退出"],"answer":[0,1,2,3]},{"id":375,"q":"____等应建立交接保管机制，入保险柜或柜员现金箱妥善保管。","options":["加钞间门控密钥","自助（智能）设备上箱体钥匙","电子钥匙","PDA"],"answer":[0,1,2,3]},{"id":376,"q":"在自助（智能）设备加配钞管理中隔日加配钞计划由____与____办理钞箱入库交接。","options":["现金清分岗","库房管理岗","记账岗","凭证岗"],"answer":[0,1]},{"id":377,"q":"在自助（智能）设备加配钞管理中装钞钞箱应严密交接手续，当日加配钞计划由____与____办理钞箱出库交接。","options":["现金清分岗","记账岗","钞箱管理岗","凭证岗"],"answer":[0,2]},{"id":378,"q":"未全部使用自动清机功能且加钞岗位固定的，钞箱管理A、B岗____至少轮换1人，每次轮换至少____，每人连续在岗时间不得超过____。","options":["1个月","一个清机周期","1个季度","193天"],"answer":[0,1,2]},{"id":379,"q":"以下关于集中加配钞流程岗位制约，说法正确的是：____。","options":["业务综合岗与监控计划岗、库房管理岗、钞箱管理岗、账务处理","账务处理岗与库房管理岗、现金清分岗、现场经理岗、钞箱管理","库房管理岗与监控计划岗、现场经理岗、钞箱管理岗分离","钞箱管理岗与监控计划岗、业务综合岗、现场经理岗分离"],"answer":[0,1,2,3]},{"id":380,"q":"跟班检查时，内勤行长应至少抽查____；管理离行式自助（智能）设备的营业机构，内勤行长应至少抽查____。","options":["10个自助银行点","20个离行点","2个自助银行点","1个离行点"],"answer":[2,3]},{"id":381,"q":"内勤行长应定期跟班检查，使用定时、加钞清机功能的，____跟班检查一次；不具备自动清机功能或使用实时清机功能的，____跟班检查一次。","options":["每半年","每季","35天","62天"],"answer":[0,1]},{"id":382,"q":"二级分行运营管理部门至少____组织一次全程监督方式的现金类自助（智能）设备突击检查，每次检查时应至少抽查____的支行，交叉检查其全部设备，全年覆盖全部现金类自助（智能）设备。","options":["每17天","每季","30%","88%"],"answer":[1,2]},{"id":383,"q":"自助（智能）设备加配钞系统紧急开闭锁模式仅用于____等情况。","options":["加配钞流程异常","下箱体卡钞","设备维护","客户投诉及自动清机账实不符"],"answer":[0,1,2,3]},{"id":384,"q":"钞箱管理岗应按指纹登录认证设备，执行____、____、____处理。","options":["现场加配钞","清机操作","下箱体紧急任务","清理押运衣服"],"answer":[0,1,2]},{"id":385,"q":"超级柜台银行卡、电子银行、转账、外汇、贷款、理财、基金、保险、纪念币、票据、定期、____、政务服务等业务按照相应规定操作。","options":["对公","缴费","账户管理","信用卡"],"answer":[0,1,2,3]},{"id":386,"q":"自助（智能）设备废钞箱和回收箱现金，可通过____、____方式带回处理。","options":["钞箱管理岗装入专用信封","生产管理岗装入自己口袋","采取整体换箱","钞箱管理岗放入自己口袋"],"answer":[0,2]},{"id":387,"q":"自助（智能）设备用钞应规定面额，经机械清分，并符合人民银行的流通标准，严禁将____、____放入钞箱。","options":["假钞","整洁钞","残钞","干净钞"],"answer":[0,2]},{"id":388,"q":"离行式自助设备的吞没卡，应由____或____现场密封。","options":["隔壁邻居","钞箱管理岗","附近商家","巡检人员"],"answer":[1,3]},{"id":389,"q":"针对自助（智能）设备清机，以下说法正确的是：____。","options":["自助（智能）设备清机分为人工清机和自动清机","实时清机：自助（智能）设备根据人工下达的清机指令，立即执行自动清机并核对账实","定时清机：自助（智能）设备按照系统设置的清机时间和频次，定时执行自动清机并核对账实","加钞清机：自助（智能）设备在钞箱管理岗完成加配钞操作后，立即执行自动清机并核对账实"],"answer":[0,3]},{"id":390,"q":"自助（智能）设备加配钞业务的日终检查的内容包括：____。","options":["业务综合岗应检查当日加钞任务是否已全部完成，未完成的任务应强行终止，并视情况进行账","集中加配钞流程下，业务综合岗还应检查隔日加钞钞箱是否已全部入库保管","库房管理岗应核对VMS库房现金余额是否与BoEing系统库房现金余额相符","现场经理应检查钞箱、钞箱袋、清分机具是否已清空"],"answer":[0,1,2,3]},{"id":391,"q":"空钞箱应设置专门区域保管，不得随意堆放，指定专人负责收发；送外部维修的钞箱必须由____、____检查确认空箱后带出","options":["金库守库人员","对公受理岗","营业机构内勤行长","前段服务岗"],"answer":[0,2]},{"id":392,"q":"代理领取吞卡的，应出具____、____有效身份证件，并通过卡片____验证。","options":["持卡人有效身份证","领卡人有效身份证","密码","户口本"],"answer":[0,1,2]},{"id":393,"q":"本行自助（智能）设备____账户日累计存款限额为20万元。","options":["借记卡","准贷记卡","贷记卡","存折"],"answer":[0,1,2,3]},{"id":394,"q":"自助设备____时，设备管理员须检查设备吞卡槽内是否有吞没卡。","options":["加钞","清机","维护维修","发生客户吞卡投诉"],"answer":[0,1,2,3]},{"id":395,"q":"自助（智能）设备对客服务区域消毒是指对____等重点部位消毒，保护客户及员工健康。","options":["密码键盘","插卡口","屏幕","存取款口"],"answer":[0,1,2,3]},{"id":396,"q":"自助（智能）设备消毒管理分为____等。","options":["设备环境消毒","对客服务区域消","管理区域消毒","设备内部消毒"],"answer":[0,1,2,3]},{"id":397,"q":"自助（智能）设备所开办的业务应满足反洗钱系统大额交易和可疑交易数据提取要求。交易过程中准确记录卡号（账号）、____等信息，支持反洗钱系统全面、完整、准确地采集客户交易信息","options":["交易地点","交易金额","交易对手","业务代码"],"answer":[0,1,2,3]},{"id":398,"q":"客户开办自助设备转账需与银行签约，____、____、____签约账户日累计转账限额为5万元。","options":["借记卡","存折","准贷记卡","对账折"],"answer":[0,1,2]},{"id":399,"q":"消费者有权____、____侵害消费者权益的行为和国家机关及其工作人员在保护消费者权益工作中的违法失职行为。","options":["歪曲","检举","控告","夸大"],"answer":[1,2]},{"id":400,"q":"个人投资者申请“第三方存管/融资融券签约”，需提供____、____、____。","options":["借记卡","本人有效身份证件","纸质版第三方存管协议或融资融券协议","贷记卡"],"answer":[0,1,2]},{"id":401,"q":"对公大额存单发行对象不包括____。","options":["公司类客户","机构类客户","个人客户","普通客户"],"answer":[2,3]},{"id":402,"q":"现金收付人员主要包括____、____、____等。","options":["柜面经理","内勤行长","管库员","客户经理"],"answer":[0,1,2]},{"id":403,"q":"客户洗钱风险评估和等级分类的时机分为____、____、____3种情况。","options":["首次评级","定期重评","触发重评","不定期评级"],"answer":[0,1,2]},{"id":404,"q":"业务管理机构开展银行汇票监督检查主要包括以下内容：____。","options":["办理银行汇票业务是否真实、合规、合法，是否遵守支付结算办法有关规定，是否遵守反洗钱的","银行汇票兑付后，是否及时抽取、核对卡片联；","银行汇票未用退回、超期付款、差错处理是否手续齐全，是否符合制度规定。","办理挂失/法院止付受理依据的材料是否齐全，是否及时，是否经内勤行长审批。"],"answer":[0,1,2,3]},{"id":405,"q":"同业存放账户档案资料包括:____。","options":["客户一级法人或一级分行授权审批文件","协议和申请表","存款银行客户提供的开户资料","营业机构尽职调查资料"],"answer":[0,1,2,3]},{"id":406,"q":"数字化业务运行中心集中处理审计类询证函和验资类询证函，其中审计类由数字化业务运行中心集中处理____三个渠道的审计类询证函来函，汇总提供企业在本行的所有相关业务信息，根据来函渠道回函并进行业务日常管理。","options":["纸质邮寄","银企通平台","企业网银","银行函证区块链服务平台"],"answer":[0,2,3]},{"id":407,"q":"银行询证函业务集中处理过程中，如遇系统验印或收费失败、回函数据不完整，将分发____、____、____的待办任务至业务归属网点。","options":["验印","收费","信息补录","补充资料"],"answer":[0,1,2]},{"id":408,"q":"验资类询证函若存在多条缴款明细，____、____、____必须一致。","options":["其他","账号","币种","付款人"],"answer":[1,2]},{"id":409,"q":"数字化业务运行中心办理询证函退回来函的应邮寄退回。具体情况包括且不限于以下：____、____、____。","options":["未加盖预留印章或骑缝章","验印通过","无法联系到发函单位或多次联系未得到答复","一份来函填写多个函证基准日"],"answer":[0,2,3]},{"id":410,"q":"询证函来函中____应当填写完整，不得空白。","options":["回函地址","联系人","联系电话","电子邮箱地址"],"answer":[0,1,2,3]},{"id":411,"q":"业务归属行收到由系统自动分发至本网点的____、____和____任务时，应尽快处理","options":["验印","收费","信息补录","拒绝"],"answer":[0,1,2]},{"id":412,"q":"核心网点应配备____名内勤行长，骨干网点根据实际情况配备1-2名内勤行长，轻型网点应配备____名内勤行长。","options":["5","2","1-2","1"],"answer":[1,3]},{"id":413,"q":"网点应针对____等老年客户阶段性集中办理业务时段，及时启动应急预案，调配劳动组合、增开弹性窗口、提供室内休息场所、联动周边网点，减少等待时间。","options":["社保卡激活","社保资金发放","养老金领取","纪念币兑换"],"answer":[0,1,2,3]},{"id":414,"q":"对等候时间较长的老年客户应关注其身体、情绪状况，必要时给予安抚、做好解释，并提供暖心服务。如遇突发疾病、身体不适等情形，网点人员应____。","options":["提供必要、安全的协助和便利措施，可为客户提供相对独立区域","依据实际情况立即拨打急救电话或联系附近医疗机构，尽快通知","维护网点现场秩序","及时向上级行报告"],"answer":[0,1,2,3]},{"id":415,"q":"各级行要定期对网点人员开展适老化服务技能培训，培训内容包括但不限于____等","options":["服务规范","服务技巧","场景培训","应急处置演练"],"answer":[0,1,2,3]},{"id":416,"q":"网点应针对社保卡激活、社保资金发放、养老金领取、纪念币兑换、春节兑换零钞等老年客户阶段性集中办理业务时段，及时启动应急预案，____，减少等待时间。","options":["调配劳动组合","增开弹性窗口","提供室内休息场所","联动周边网点"],"answer":[0,1,2,3]},{"id":417,"q":"遇有老年客户办理开户、大额取现或转账业务，网点应关注____。","options":["是否有可疑人员陪同或其他异常","做好风险提示","请客户二次确认","必要时联系客户子女等亲属协助"],"answer":[0,1,2,3]},{"id":418,"q":"网点应落实首接负责，____，____，不得以任何形式推诿拒办。","options":["主动问候、了解老年客户需求","妥善引导","协助办理","代为操作"],"answer":[0,1,2]},{"id":419,"q":"各行在网点建设、厅堂改造过程中，可结合老年客户等特殊群体身体和行为特点，从____等方面作人性化的设计、配置和优化","options":["整体布局","功能分区","设备设施","视觉元素"],"answer":[0,1,2,3]},{"id":420,"q":"在客户需要救治的紧急情况下，无法按法律程序申请认定的，可由代理人提供____办理支取，支取资金只能转入救治医院指定账户。","options":["医院诊疗证明","直系亲属关系证明","承诺书","代理人和被代理人有效身份证件"],"answer":[0,1,2,3]},{"id":421,"q":"网点在适老化服务中，应遵循“____，____，____”的原则，为老年客户提供更加用心、细心、精心的金融服务。","options":["刻板守旧、防范风险","首接负责、关注关怀","优先办理、暖心舒适","特事特办、合规高效"],"answer":[1,2,3]},{"id":422,"q":"中心库按照功能分为：具备档案保管、整理、调阅及数字化转化等功能的____、仅具备档案保管、调阅功能的____。","options":["综合性库房","保管库房","一级分行中心库","二级分行中心库"],"answer":[0,1]},{"id":423,"q":"中心库按照库房服务范围分为：____。","options":["跨一级分行中心库","一级分行中心库","跨二级分行区域中心库","二级分行中心库"],"answer":[0,1,2,3]},{"id":424,"q":"运营档案按载体划分为：____、____。","options":["纸质档案","报表","电子档案","凭证"],"answer":[0,2]},{"id":425,"q":"非凭证类档案包括____、____、____。","options":["重要空白凭证","账簿","报表和清单流水","其他运营档案"],"answer":[1,2,3]},{"id":426,"q":"运营档案管理场所（以下简称档案场所）包括____和____，是作业及保管纸质运营档案的主要场所。","options":["运营档案库","运营档案管理场地","后督中心","营业场所"],"answer":[0,1]},{"id":427,"q":"客服经理张三在日终签退前，应如何处理当日自己的纸质凭证：____、____。","options":["张三按照BoEing、一体化平台、其他系统，编号由小到大，整理并交内勤行长审","张三将未经整理的凭证直接交内勤行长","张三对本人凭证的真实性、完整性负责","内勤行长对张三凭证的真实性、完整性负责"],"answer":[0,2]},{"id":428,"q":"电子商业汇票持票人提示付款或逾期提示付款，经办行不得无理拒付。拒付理由有____。","options":["与自己有直接债权债务关系的持票人未履行约定义务","持票人以欺诈、偷盗或者胁迫等手段取得票据","持票人明知有欺诈、偷盗或者胁迫等情形，出于恶意取得票据","持票人明知债务人与出票人或者持票人的前手之间存在抗辩事由而取得票据"],"answer":[0,1,2,3]},{"id":429,"q":"下列关于银行本票挂失止付业务的说法正确的是____。","options":["未填明“现金”字样的银行本票丧失，不得挂失止付","不可对“法院止付”状态的银行本票进行挂失","出票行自收到《银行本（汇）票挂失/解除挂失止付通知书》之日起12日内没有收到人民法院止付通知书，自第13日起，持票人依法提示付款的，经内勤行长或其授权人审批同意","挂失申请人向出票行申请银行本票挂失、解除挂失"],"answer":[0,1,2,3]},{"id":430,"q":"出票人申请签发电子银行承兑汇票，可自行通过____、____办理出票申请，或委托银行办理。","options":["大堂经理手机","企业金融服务平台","银企直连","大堂保安手机"],"answer":[1,2]},{"id":431,"q":"关于大额支付业务，下列说法正确的是____。","options":["对单位客户汇款单笔金额人民币100万元（含）以上的，必须换人验印","对新开立账户短期内有大额资金汇出汇入、账户未开通账通知、不能确定经办人为账户单位人员、客户经理传递票据等特殊情况，营业机构应高度重视，认真分析后谨慎处理","在业务办理过程中，营业机构发现或有合理理由怀疑客户、客户的资金或者其他资产、客户的交易或者试图进行的交易与洗钱、涉赌涉诈等犯罪活动相关，应及时手工建立可疑","营业机构每日定时查询待处理业务，发现有待处理任务应及时进行处理"],"answer":[0,1,2,3]},{"id":432,"q":"小额集中代收付业务包含：____。","options":["批量代收业务","批量代付业务","实时代收业务","实时代付业务"],"answer":[0,1,2,3]},{"id":433,"q":"在办理对客汇款业务过程中，若CCS等级为____、____、____，按照现有业务流程处理。","options":["低风险类","中低风险类","高风险类","中风险类"],"answer":[0,1,3]},{"id":434,"q":"C4客户____、注册资金币种、注册资金金额、经营范围，从业人员、资产总额、营业收入，行业门类代码、行业代码变更，仅允许通过C4系统进行修改。","options":["英文名称","注册地国别","中文名称","注册资金币种"],"answer":[0,1,2,3]},{"id":435,"q":"存量单位结算账户撤销业务，下列哪些属于可撤销的账户性质____。","options":["基本存款账户","一般存款账户","专用存款账户","临时存款账户"],"answer":[0,1,2,3]},{"id":436,"q":"下列属于存量单位结算账户变更业务可变更的信息有____。","options":["客户信息","账户信息及金融服务平台信息","集中对账信息","消息服务信息"],"answer":[0,1,2,3]},{"id":437,"q":"下列属于存量单位结算账户变更业务可变更的账户性质有____。","options":["基本存款账户","一般存款账户","专用存款账户","临时存款账户"],"answer":[0,1,2,3]},{"id":438,"q":"企业基本户开户，开户意愿核实方式须为____、____。","options":["面对面","远程视频","录音录像","电话"],"answer":[0,1,2]},{"id":439,"q":"企业经营地址核实方式包括：____。","options":["上门核实","远程视频核实","公开信息","辅助证明材料"],"answer":[0,1,2,3]},{"id":440,"q":"智速平台开户客户线上预约包括____等渠道。","options":["企业掌银","微信小程序","本行门户网站","第三方平台"],"answer":[0,1,2,3]},{"id":441,"q":"对公开户KYC已实现尽调资料电子归档，柜面无需打印____、____、____。针对电子核实报告，按有关要求需打印后签章的，将打印并签章的纸质核实报告作为开户资","options":["尽职调查表","加强型尽职调查表","对公客户身份识别信息采集表","综合申请表"],"answer":[0,1,2]},{"id":442,"q":"客户申请变更____注册资本、经营范围、注册地址、经营地址等核心要素时，需客户经理进行KYC尽调或提供纸质《对公客户尽职调查表》。","options":["单位名称","单位证件类型及号码","法定代表人姓名","法定代表人证件号码"],"answer":[0,1,2,3]},{"id":443,"q":"离行式自助设备的吞没卡如遇客户投诉等紧急情况，金库或营业机构应制订紧急开闭锁任务，由____、____现场处理。","options":["隔壁邻居","附近商家","钞箱管理岗","巡检人员"],"answer":[2,3]}];
+</script>
+<script>
+/* ===================== 基础工具 ===================== */
+var LT = ['A', 'B', 'C', 'D'];
+var K = { wrong: 'dx_wrong', fav: 'dx_fav', prog: 'dx_prog', stats: 'dx_stats', exam: 'dx_exam', seen: 'dx_seen' };
+var storeOK = true;
+
+function $(id) { return document.getElementById(id); }
+function toast(msg) {
+  var t = $('toast'); t.textContent = msg; t.className = 'toast on';
+  clearTimeout(t._h); t._h = setTimeout(function () { t.className = 'toast'; }, 1800);
+}
+function shuffle(a) {
+  for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+function letters(arr) {
+  var s = arr.slice().sort(function (a, b) { return a - b; });
+  var out = []; for (var i = 0; i < s.length; i++) out.push(LT[s[i]]);
+  return out.join('、');
+}
+function sameSet(a, b) {
+  if (a.length !== b.length) return false;
+  return a.slice().sort().join(',') === b.slice().sort().join(',');
+}
+function two(n) { return (n < 10 ? '0' : '') + n; }
+function mmss(sec) { sec = Math.max(0, sec); return two(Math.floor(sec / 60)) + ':' + two(sec % 60); }
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+var store = {
+  get: function (k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set: function (k, v) {
+    try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+    catch (e) { storeOK = false; $('storeWarn').style.display = 'block'; return false; }
+  }
+};
+(function () {
+  try { localStorage.setItem('dx_test', '1'); localStorage.removeItem('dx_test'); }
+  catch (e) { storeOK = false; $('storeWarn').style.display = 'block'; }
+})();
+
+/* ===================== 数据 ===================== */
+var QMAP = {}; for (var qi = 0; qi < QUESTIONS.length; qi++) QMAP[QUESTIONS[qi].id] = QUESTIONS[qi];
+var wrong = store.get(K.wrong, []), fav = store.get(K.fav, []), prog = store.get(K.prog, {});
+var stats = store.get(K.stats, { total: 0, right: 0 }), examLog = store.get(K.exam, []), seen = store.get(K.seen, []);
+function seenAdd(id) { if (seen.indexOf(id) < 0) { seen.push(id); store.set(K.seen, seen); } }
+
+/* ===================== 状态 ===================== */
+var S = { mode: 'seq', list: [], idx: 0, picks: [], answered: false, exam: false, examAns: {}, limit: 0, left: 0, startAt: 0, timer: null, examUsed: 0, lastWrong: [] };
+
+/* ===================== 导航 ===================== */
+function show(id) {
+  var ps = document.querySelectorAll('.page');
+  for (var i = 0; i < ps.length; i++) ps[i].className = ps[i].className.replace(/\s*active/g, '');
+  $(id).className += ' active';
+  var ts = document.querySelectorAll('.tabs .tab');
+  for (var j = 0; j < ts.length; j++) {
+    var on = ts[j].getAttribute('data-tab') === id;
+    ts[j].className = 'tab' + (on ? ' on' : '');
+  }
+  if (id !== 'p-quiz') $('quizTimer').textContent = '';
+  if (id === 'p-home') renderHome();
+  if (id === 'p-wrong') renderList('wrong');
+  if (id === 'p-fav') renderList('fav');
+  if (id === 'p-stat') renderStat();
+  window.scrollTo(0, 0);
+}
+function tabGo(id) {
+  if (S.exam && id !== 'p-quiz') {
+    if (!confirm('正在考试中，离开将放弃本次考试，确定吗？')) return;
+    S.exam = false;
+  }
+  if (id !== 'p-quiz') stopTimer();
+  show(id);
+}
+
+/* ===================== 首页 ===================== */
+function renderHome() {
+  $('homeSub').textContent = '共 ' + QUESTIONS.length + ' 题 · 多选题';
+  $('heroTotal').textContent = QUESTIONS.length;
+  $('heroSeen').textContent = seen.length;
+  var rate = stats.total ? Math.round(stats.right / stats.total * 100) : 0;
+  $('heroRate').textContent = rate + '%';
+  $('heroBar').style.width = (seen.length / QUESTIONS.length * 100) + '%';
+  $('tipWrong').textContent = wrong.length ? '当前错题 ' + wrong.length + ' 道，点击开始复习' : '暂时没有错题，继续保持';
+  $('tipFav').textContent = fav.length ? '当前收藏 ' + fav.length + ' 道' : '还没有收藏题目（答题页可收藏）';
+  var p = prog.seq || 0;
+  $('tipSeq').textContent = (p > 0 && p < QUESTIONS.length) ? '上次练到第 ' + (p + 1) + ' 题，继续' : '按题号练习，自动记住位置';
+}
+
+/* ===================== 开始练习 ===================== */
+function startDrill(mode) {
+  var list = [], i, q, title = '';
+  if (mode === 'seq') { list = QUESTIONS.slice(); title = '顺序刷题'; }
+  else if (mode === 'rand') { list = shuffle(QUESTIONS.slice()); title = '随机刷题'; }
+  else if (mode === 'wrong') {
+    for (i = 0; i < wrong.length; i++) { q = QMAP[wrong[i]]; if (q) list.push(q); }
+    title = '错题重刷';
+    if (!list.length) { toast('错题本是空的，先去刷几道题'); return; }
+  } else {
+    for (i = 0; i < fav.length; i++) { q = QMAP[fav[i]]; if (q) list.push(q); }
+    title = '收藏重刷';
+    if (!list.length) { toast('还没有收藏题目'); return; }
+  }
+  S.mode = mode; S.list = list; S.exam = false; S.examAns = {}; S.limit = 0; S.left = 0;
+  S.idx = mode === 'seq' ? Math.min(prog.seq || 0, list.length - 1) : 0;
+  $('sheetLink').className = 'linkbtn hide';
+  show('p-quiz'); renderQ(); startClock();
+}
+
+function startCustom(list, title) {
+  if (!list || !list.length) { toast('没有可练习的题目'); return; }
+  S.mode = 'one'; S.list = list; S.idx = 0; S.exam = false; S.examAns = {}; S.limit = 0; S.left = 0;
+  $('sheetLink').className = 'linkbtn hide';
+  show('p-quiz'); renderQ(); startClock();
+}
+function drillOne(id) { var q = QMAP[id]; if (q) startCustom([q], '单题复习'); }
+function drillWrongSet() {
+  var ids = S.lastWrong || [], list = [], i, q;
+  for (i = 0; i < ids.length; i++) { q = QMAP[ids[i]]; if (q) list.push(q); }
+  if (!list.length) { toast('本次没有错题，太棒了'); return; }
+  startCustom(list, '本次错题');
+}
+function quitQuiz() {
+  if (S.exam) {
+    if (!confirm('正在考试中，退出将放弃本次考试，确定吗？')) return;
+    S.exam = false;
+  }
+  stopTimer();
+  show('p-home');
+}
+
+/* ===================== 计时 ===================== */
+function startClock() {
+  stopTimer();
+  S.startAt = Date.now();
+  if (S.exam) { S.left = S.limit; }
+  tick();
+  S.timer = setInterval(tick, 1000);
+}
+function stopTimer() { if (S.timer) { clearInterval(S.timer); S.timer = null; } }
+function tick() {
+  var el = $('quizTimer');
+  if (S.exam) {
+    S.left = S.limit - Math.floor((Date.now() - S.startAt) / 1000);
+    if (S.left <= 0) { el.textContent = '⏱ 00:00'; el.className = 'timer warn'; stopTimer(); submitExam(true); return; }
+    el.textContent = '⏱ ' + mmss(S.left);
+    el.className = 'timer' + (S.left <= 60 ? ' warn' : '');
+  } else {
+    el.textContent = mmss(Math.floor((Date.now() - S.startAt) / 1000));
+    el.className = 'timer';
+  }
+}
+
+/* ===================== 渲染题目 ===================== */
+function renderQ() {
+  var q = S.list[S.idx];
+  if (!q) { $('stem').textContent = '（没有题目）'; return; }
+  S.answered = false;
+  S.picks = S.exam ? (S.examAns[q.id] || []).slice() : [];
+
+  $('pos').textContent = '第 ' + (S.idx + 1) + ' / ' + S.list.length + ' 题';
+  $('typeLab').textContent = '多选 · 银行试题题库';
+  $('stem').textContent = q.q;
+  $('res').innerHTML = '';
+  $('favBtn').textContent = fav.indexOf(q.id) >= 0 ? '★ 已收藏本题' : '☆ 收藏本题';
+
+  var box = $('opts'); box.innerHTML = '';
+  for (var i = 0; i < q.options.length; i++) {
+    (function (i) {
+      var d = document.createElement('div');
+      d.className = S.picks.indexOf(i) >= 0 ? 'opt sel' : 'opt';
+      var m = document.createElement('div'); m.className = 'mark'; m.textContent = LT[i];
+      var t = document.createElement('div'); t.className = 'tx'; t.textContent = q.options[i];
+      d.appendChild(m); d.appendChild(t);
+      d.onclick = function () { choose(i, d); };
+      box.appendChild(d);
+    })(i);
+  }
+
+  $('mainBtn').textContent = S.exam ? '下一题' : '提交答案';
+  window.scrollTo(0, 0);
+}
+
+function choose(i, el) {
+  if (S.answered) return;
+  var p;
+  if (S.exam) {
+    var q = S.list[S.idx];
+    var arr = (S.examAns[q.id] || []).slice();
+    p = arr.indexOf(i);
+    if (p >= 0) { arr.splice(p, 1); el.className = 'opt'; }
+    else { arr.push(i); el.className = 'opt sel'; }
+    S.examAns[q.id] = arr; S.picks = arr;
+  } else {
+    p = S.picks.indexOf(i);
+    if (p >= 0) { S.picks.splice(p, 1); el.className = 'opt'; }
+    else { S.picks.push(i); el.className = 'opt sel'; }
+  }
+}
+
+/* ===================== 判分（练习） ===================== */
+function mainAction() {
+  if (S.exam) { nextQ(); return; }
+  if (S.answered) {
+    if (S.idx >= S.list.length - 1) { stopTimer(); show('p-home'); }
+    else nextQ();
+    return;
+  }
+  submitAnswer();
+}
+
+function submitAnswer() {
+  var q = S.list[S.idx];
+  if (!S.picks.length) { toast('请先选择答案'); return; }
+  S.answered = true;
+  var ok = sameSet(S.picks, q.answer);
+
+  stats.total++;
+  if (ok) { stats.right++; wrong = wrong.filter(function (x) { return x !== q.id; }); }
+  else { if (wrong.indexOf(q.id) < 0) wrong.push(q.id); }
+  seenAdd(q.id);
+  store.set(K.stats, stats); store.set(K.wrong, wrong);
+  if (S.mode === 'seq') { prog.seq = S.idx + 1; store.set(K.prog, prog); }
+
+  var nodes = document.querySelectorAll('#opts .opt');
+  for (var k = 0; k < nodes.length; k++) {
+    var inAns = q.answer.indexOf(k) >= 0, inPick = S.picks.indexOf(k) >= 0;
+    if (inAns && inPick) nodes[k].className = 'opt right dis';
+    else if (inAns && !inPick) nodes[k].className = 'opt missed dis';
+    else if (!inAns && inPick) nodes[k].className = 'opt wrong dis';
+    else nodes[k].className = 'opt dis';
+  }
+
+  $('res').innerHTML = '<div class="result ' + (ok ? 'ok' : 'no') + '">'
+    + '<span class="big">' + (ok ? '✅ 回答正确' : '❌ 回答错误') + '</span>'
+    + '正确答案：<span class="ans">' + letters(q.answer) + '</span>'
+    + (ok ? '' : '　你选了：' + letters(S.picks))
+    + '</div>';
+  $('mainBtn').textContent = (S.idx >= S.list.length - 1) ? '完成，回首页' : '下一题';
+}
+
+/* ===================== 收藏 ===================== */
+function toggleFav() {
+  var q = S.list[S.idx]; if (!q) return;
+  var p = fav.indexOf(q.id);
+  if (p >= 0) { fav.splice(p, 1); toast('已取消收藏'); }
+  else { fav.push(q.id); toast('已收藏'); }
+  store.set(K.fav, fav);
+  $('favBtn').textContent = fav.indexOf(q.id) >= 0 ? '★ 已收藏本题' : '☆ 收藏本题';
+}
+
+/* ===================== 上下题 ===================== */
+function prevQ() { if (S.idx > 0) { S.idx--; renderQ(); } else toast('已经是第一题'); }
+function nextQ() {
+  if (S.idx < S.list.length - 1) { S.idx++; renderQ(); }
+  else if (S.exam) { openSheet(); }
+  else { toast('已经是最后一题'); }
+}
+
+/* ===================== 模拟考试 ===================== */
+function startExam() {
+  var n = parseInt($('examNum').value, 10) || 50;
+  var m = parseInt($('examMin').value, 10) || 40;
+  n = Math.max(1, Math.min(n, QUESTIONS.length));
+  m = Math.max(1, Math.min(m, 300));
+  S.list = shuffle(QUESTIONS.slice()).slice(0, n);
+  S.idx = 0; S.exam = true; S.examAns = {}; S.mode = 'exam'; S.limit = m * 60; S.left = m * 60;
+  $('sheetLink').className = 'linkbtn';
+  show('p-quiz'); renderQ(); startClock();
+}
+
+function openSheet() {
+  var g = $('sheetGrid'); g.innerHTML = '';
+  var done = 0;
+  for (var i = 0; i < S.list.length; i++) {
+    (function (i) {
+      var q = S.list[i];
+      var has = (S.examAns[q.id] || []).length > 0;
+      if (has) done++;
+      var d = document.createElement('div');
+      d.className = 'no' + (has ? ' done' : '') + (i === S.idx ? ' cur' : '');
+      d.textContent = i + 1;
+      d.onclick = function () { S.idx = i; closeSheet(); renderQ(); };
+      g.appendChild(d);
+    })(i);
+  }
+  $('sheetTip').textContent = '已答 ' + done + ' / ' + S.list.length;
+  $('mask').className = 'mask on'; $('sheet').className = 'sheet on';
+}
+function closeSheet() { $('mask').className = 'mask'; $('sheet').className = 'sheet'; }
+
+function submitExam(auto) {
+  var total = S.list.length, right = 0, unanswered = 0, det = [], i;
+  for (i = 0; i < total; i++) {
+    var q = S.list[i];
+    var sel = S.examAns[q.id] || [];
+    var ok = sel.length > 0 && sameSet(sel, q.answer);
+    if (!sel.length) unanswered++;
+    if (ok) { right++; wrong = wrong.filter(function (x) { return x !== q.id; }); }
+    else { if (wrong.indexOf(q.id) < 0) wrong.push(q.id); }
+    if (sel.length) seenAdd(q.id);
+    det.push({ id: q.id, sel: sel.slice(), ok: ok });
+  }
+  var used = S.limit - Math.max(0, S.left);
+  if (!auto) {
+    if (unanswered > 0) { if (!confirm('还有 ' + unanswered + ' 题未作答，未答按错误计分。确定交卷吗？')) return; }
+    else { if (!confirm('确定交卷吗？')) return; }
+  }
+  stopTimer(); closeSheet();
+  stats.total += total; stats.right += right;
+  store.set(K.stats, stats); store.set(K.wrong, wrong);
+  var score = total ? Math.round(right / total * 100) : 0;
+  var rec = { time: new Date().toLocaleString('zh-CN', { hour12: false }), num: total, right: right, score: score, used: mmss(used) };
+  examLog.unshift(rec); if (examLog.length > 30) examLog.pop();
+  store.set(K.exam, examLog);
+  S.exam = false; S.lastWrong = [];
+  for (i = 0; i < det.length; i++) { if (!det[i].ok) S.lastWrong.push(det[i].id); }
+  renderResult(rec, det, unanswered);
+  show('p-result');
+}
+
+function renderResult(rec, det, unanswered) {
+  var html = '<div class="score"><div class="num">' + rec.score + '<small> 分</small></div>'
+    + '<div class="lab">' + (rec.score >= 90 ? '很棒，继续保持' : rec.score >= 60 ? '及格了，错题再看一遍' : '错得较多，建议先刷错题') + '</div>'
+    + '<div class="meta"><div><b>' + rec.num + '</b>总题数</div><div><b>' + rec.right + '</b>答对</div><div><b>' + (rec.num - rec.right) + '</b>答错</div><div><b>' + rec.used + '</b>用时</div></div></div>';
+  if (unanswered) html += '<p class="muted" style="padding:0 4px 8px">其中 ' + unanswered + ' 题未作答，按错误计。</p>';
+  html += '<p class="sect">逐题对错（点击展开）</p>';
+  for (var i = 0; i < det.length; i++) {
+    var d = det[i], q = QMAP[d.id];
+    html += '<div class="det" onclick="this.className=\'det\'+(this.className.indexOf(\'open\')>=0?\'\':\' open\')">'
+      + '<div class="top"><span class="tag ' + (d.ok ? 'ok' : 'no') + '">' + (d.ok ? '对' : '错') + '</span>'
+      + '<div class="tx">' + (i + 1) + '. ' + esc(q.q) + '</div></div>'
+      + '<div class="ansline">你的答案：<i>' + (d.sel.length ? letters(d.sel) : '未作答') + '</i>　正确答案：<em>' + letters(q.answer) + '</em></div>'
+      + '<div class="body">';
+    for (var k = 0; k < q.options.length; k++) {
+      var isA = q.answer.indexOf(k) >= 0;
+      html += '<div class="o">' + (isA ? '<b>' + LT[k] + '.（正确）</b>' : LT[k] + '.') + ' ' + esc(q.options[k]) + '</div>';
+    }
+    html += '</div></div>';
+  }
+  html += '<button class="btn" style="margin-top:8px" onclick="drillWrongSet()">重刷本次错题</button>';
+  html += '<button class="btn line" style="margin-top:9px" onclick="show(\'p-home\')">返回首页</button>';
+  $('resultWrap').innerHTML = html;
+}
+
+/* ===================== 错题 / 收藏列表 ===================== */
+function renderList(type) {
+  var ids = (type === 'wrong' ? wrong.slice() : fav.slice());
+  var box = (type === 'wrong') ? $('wrongList') : $('favList');
+  var numEl = (type === 'wrong') ? $('wrongNum') : $('favNum');
+  ids.sort(function (a, b) { return a - b; });
+  numEl.textContent = ids.length ? '共 ' + ids.length + ' 题' : '';
+  if (!ids.length) {
+    box.innerHTML = '<div class="empty">' + (type === 'wrong'
+      ? '还没有错题<br><span style="font-size:13px">做错的题会自动收进这里</span>'
+      : '还没有收藏<br><span style="font-size:13px">答题页点「收藏本题」就会出现在这里</span>') + '</div>';
+    return;
+  }
+  var html = '<button class="btn" style="margin-bottom:12px" onclick="startDrill(\'' + type + '\')">开始' + (type === 'wrong' ? '错题重刷' : '收藏重刷') + '（' + ids.length + ' 题）</button>';
+  for (var i = 0; i < ids.length; i++) {
+    var q = QMAP[ids[i]]; if (!q) continue;
+    html += '<div class="item" onclick="drillOne(' + q.id + ')">'
+      + '<div class="ln1"><span>第 ' + q.id + ' 题</span><span>多选</span></div>'
+      + '<div class="tx">' + esc(q.q) + '</div>'
+      + '<div class="ln2">答案：' + letters(q.answer) + '</div></div>';
+  }
+  box.innerHTML = html;
+}
+
+/* ===================== 统计 ===================== */
+function renderStat() {
+  $('sSeen').textContent = seen.length;
+  $('sTotal').textContent = stats.total;
+  $('sRate').textContent = (stats.total ? Math.round(stats.right / stats.total * 100) : 0) + '%';
+  $('sWrong').textContent = wrong.length;
+  $('sFav').textContent = fav.length;
+  $('sExam').textContent = examLog.length;
+  if (!examLog.length) { $('examLog').innerHTML = '<div style="padding:14px;text-align:center;color:#a8aeb8;font-size:13px">暂无记录</div>'; return; }
+  var h = '';
+  for (var i = 0; i < examLog.length; i++) {
+    var e = examLog[i];
+    h += '<div class="row"><span>' + esc(e.time) + '　' + e.num + ' 题</span><span>用时 ' + e.used + '　<b>' + e.score + ' 分</b></span></div>';
+  }
+  $('examLog').innerHTML = h;
+}
+
+/* ===================== 备份 ===================== */
+function exportData() {
+  var data = { app: '银行多选题刷题', version: 1, wrong: wrong, fav: fav, prog: prog, stats: stats, examLog: examLog, seen: seen, exportedAt: new Date().toISOString() };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '多选题刷题备份_' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('已导出，请到下载目录查看');
+}
+function importData(input) {
+  var f = input.files && input.files[0]; if (!f) return;
+  var r = new FileReader();
+  r.onload = function () {
+    try {
+      var d = JSON.parse(r.result);
+      if (!d || typeof d !== 'object') throw new Error('bad');
+      if (['wrong', 'fav', 'seen'].some(function (k) { return d[k] && !Array.isArray(d[k]); })) throw new Error('bad');
+      if (!confirm('导入将覆盖当前记录，确定吗？')) return;
+      wrong = d.wrong || []; fav = d.fav || []; prog = d.prog || {};
+      stats = d.stats || { total: 0, right: 0 }; examLog = d.examLog || []; seen = d.seen || [];
+      store.set(K.wrong, wrong); store.set(K.fav, fav); store.set(K.prog, prog);
+      store.set(K.stats, stats); store.set(K.exam, examLog); store.set(K.seen, seen);
+      renderStat(); toast('导入成功');
+    } catch (e) { alert('文件格式不对，请选择本网页导出的 .json 备份文件'); }
+  };
+  r.readAsText(f);
+  input.value = '';
+}
+function resetAll() {
+  if (!confirm('确定清空所有答题记录、错题和收藏吗？此操作不可恢复')) return;
+  wrong = []; fav = []; prog = {}; stats = { total: 0, right: 0 }; examLog = []; seen = [];
+  for (var k in K) { try { localStorage.removeItem(K[k]); } catch (e) { } }
+  renderStat(); renderHome(); toast('已清空');
+}
+
+/* ===================== 启动 ===================== */
+(function () {
+  if (typeof QUESTIONS === 'undefined' || !QUESTIONS.length) {
+    document.body.innerHTML = '<div class="empty">题库未加载，请刷新页面</div>'; return;
+  }
+  $('maxNum').textContent = QUESTIONS.length;
+  renderHome();
+})();
+</script>
+</body>
+</html>
